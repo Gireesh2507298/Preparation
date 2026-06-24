@@ -6464,3 +6464,302 @@ class ApplicationTests {
     </build>
 </project>
 
+
+Project: LearnVault 
+Corporate Learning & Training Management System 
+Domain: Education & Learning 
+1. Introduction 
+LearnVault is a web-based corporate learning and training management system designed for 
+enterprises, training academies, and professional certification bodies to manage course 
+catalogs, learner enrollments, assessments, certifications, instructor scheduling, and learning 
+analytics. The system enables employees to discover and enroll in courses, instructors to 
+manage content delivery and assessments, learning administrators to track completion rates 
+and certification compliance, and HR teams to align training programs with skill gap 
+requirements. 
+It uses a REST API-based backend architecture with Angular/React frontend and is 
+compatible with Java (Spring Boot) and .NET (ASP.NET Core) platforms. 
+Actors / Users 
+• Learner / Employee: Browses catalog, enrolls in courses, takes assessments, earns 
+certifications 
+• Instructor / Trainer: Creates course content, schedules sessions, grades 
+assessments 
+• Learning Administrator: Manages catalog, tracks completions, and enforces 
+certification compliance 
+• HR Manager: Assigns mandatory training, monitors skill development, and reviews 
+gap reports 
+• Compliance Officer: Tracks regulatory training completions and generates 
+compliance reports 
+• LMS Admin: Configures learning paths, badge rules, assessment settings, and user 
+roles 
+2. Module Overview 
+• 2.1 Identity & Access Management: Authentication, RBAC, and audit trails. 
+• 2.2 Course Catalog & Content Management: Manages courses, modules, 
+materials, and learning paths. 
+• 2.3 Enrollment & Learning Progress: Handles course enrollments, progress 
+tracking, and completions. 
+• 2.4 Assessment & Evaluation: Manages quizzes, assignments, grading, and 
+feedback. 
+• 2.5 Certification & Badge Management: Issues certifications and digital badges on 
+course completion. 
+• 2.6 Instructor & Session Management: Manages instructor profiles, live sessions, 
+and batch scheduling. 
+• 2.7 Learning Analytics & Reporting: Provides dashboards for completion rates, 
+assessment scores, and skill coverage. 
+• 2.8 Notifications & Alerts: Enrollment confirmations, deadline reminders, and 
+certification expiry alerts. 
+3. Architecture Overview 
+• Frontend: Angular or React 
+• Backend: REST API-based architecture 
+• Database: Relational Database (MySQL / PostgreSQL / SQL Server) 
+4. Module-Wise Design 
+4.1 Identity & Access Management Module 
+Features 
+• User registration, login, and role-based access control 
+• Department-based access scoping and full audit logging 
+Entities 
+• User 
+◦ UserID 
+◦ Name 
+◦ Role (Learner/Instructor/LearningAdmin/HRManager/Compliance/Admin) 
+◦ Email 
+◦ Phone 
+◦ DepartmentID 
+◦ ManagerID 
+◦ Status (Active/Inactive) 
+• AuditLog 
+◦ AuditID 
+◦ UserID 
+◦ Action 
+◦ EntityType 
+◦ Timestamp 
+4.2 Course Catalog & Content Management Module 
+Features 
+• Create and manage courses with modules, topics, and rich content 
+• Define learning paths and assign prerequisite courses 
+Entities 
+• Course 
+◦ CourseID 
+◦ Title 
+◦ Category 
+◦ Level (Beginner/Intermediate/Advanced) 
+◦ DurationHours 
+◦ InstructorID 
+◦ DeliveryMode (SelfPaced/Instructor-Led/Blended) 
+◦ Status (Draft/Published/Archived) 
+• Module 
+◦ ModuleID 
+◦ CourseID 
+◦ Title 
+◦ SequenceOrder 
+◦ ContentType (Video/Document/Quiz/Assignment) 
+◦ ContentURL 
+◦ DurationMinutes 
+• LearningPath 
+◦ PathID 
+◦ Name 
+◦ TargetRole 
+◦ CourseSequence 
+◦ TotalHours 
+◦ Status (Active/Inactive) 
+4.3 Enrollment & Learning Progress Module 
+Features 
+• Enroll learners in courses individually or via batch assignment 
+• Track module-level progress, time spent, and completion status 
+Entities 
+• Enrollment 
+◦ EnrollmentID 
+◦ LearnerID 
+◦ CourseID 
+◦ EnrollmentDate 
+◦ DeadlineDate 
+◦ CompletionDate 
+◦ ProgressPercent 
+◦ Status (Enrolled/InProgress/Completed/Dropped/Overdue) 
+• ModuleProgress 
+◦ ProgressID 
+◦ EnrollmentID 
+◦ ModuleID 
+◦ StartedDate 
+◦ CompletedDate 
+◦ TimeSpentMinutes 
+◦ Status (NotStarted/InProgress/Completed) 
+4.4 Assessment & Evaluation Module 
+Features 
+• Create quizzes and assignments with configurable scoring rules 
+• Record attempt results, provide feedback, and manage retakes 
+Entities 
+• Assessment 
+◦ AssessmentID 
+◦ CourseID 
+◦ ModuleID 
+◦ Type (Quiz/Assignment/FinalExam) 
+◦ TotalMarks 
+◦ PassingMarks 
+◦ MaxAttempts 
+◦ TimeLimitMinutes 
+◦ Status (Active/Inactive) 
+• Question 
+◦ QuestionID 
+◦ AssessmentID 
+◦ QuestionText 
+◦ Type (MCQ/TrueFalse/ShortAnswer) 
+◦ Options 
+◦ CorrectAnswer 
+◦ Marks 
+• AttemptRecord 
+◦ AttemptID 
+◦ AssessmentID 
+◦ LearnerID 
+◦ AttemptNumber 
+◦ Score 
+◦ Passed 
+◦ AttemptDate 
+◦ TimeTakenMinutes 
+4.5 Certification & Badge Management Module 
+Features 
+• Auto-issue certifications upon successful course or path completion 
+• Manage badge catalog, validity periods, and renewal requirements 
+Entities 
+• Certification 
+◦ CertificationID 
+◦ CourseID 
+◦ LearnerID 
+◦ IssuedDate 
+◦ ExpiryDate 
+◦ CertificateNumber 
+◦ Status (Valid/Expired/Revoked) 
+• Badge 
+◦ BadgeID 
+◦ Name 
+◦ Criteria 
+◦ CourseID 
+◦ ImagePath 
+◦ Status (Active/Inactive) 
+• BadgeAward 
+◦ AwardID 
+◦ BadgeID 
+◦ LearnerID 
+◦ AwardedDate 
+◦ Status (Active/Revoked) 
+4.6 Instructor & Session Management Module 
+Features 
+• Manage instructor profiles, qualifications, and availability 
+• Schedule live training sessions and manage batch registrations 
+Entities 
+• Instructor 
+◦ InstructorID 
+◦ UserID 
+◦ Specializations 
+◦ QualificationLevel 
+◦ RatingAvg 
+◦ Status (Active/Inactive) 
+• TrainingSession 
+◦ SessionID 
+◦ CourseID 
+◦ InstructorID 
+◦ SessionDate 
+◦ StartTime 
+◦ EndTime 
+◦ Venue (VirtualRoom/PhysicalRoom) 
+◦ MaxCapacity 
+◦ Status (Scheduled/Ongoing/Completed/Cancelled) 
+• SessionRegistration 
+◦ RegistrationID 
+◦ SessionID 
+◦ LearnerID 
+◦ RegisteredDate 
+◦ AttendanceStatus (Registered/Attended/Absent/Waitlisted) 
+4.7 Learning Analytics & Reporting Module 
+Features 
+• Completion rate and assessment score dashboards by department and course 
+• Skill coverage heatmaps, mandatory training compliance, and leaderboard metrics 
+Entities 
+• LearningReport 
+◦ ReportID 
+◦ Scope (Department/Course/LearningPath/Period) 
+◦ Metrics (EnrollmentCount, CompletionRate, AvgScore, CertificationCount, 
+OverdueCount) 
+◦ GeneratedDate 
+4.8 Notifications & Alerts Module 
+Features 
+• Enrollment confirmation, course deadline reminders, and session updates 
+• Certification expiry and mandatory training overdue alerts 
+Entities 
+• Notification 
+◦ NotificationID 
+◦ UserID 
+◦ Message 
+◦ Category (Enrollment/Assessment/Certification/Session/Compliance) 
+◦ Status (Unread/Read/Dismissed) 
+◦ CreatedDate 
+5. Deployment Strategy 
+• Local: Angular/React frontend, Spring Boot/.NET Core backend, local DB 
+• Production: Cloud or on-premises with secure APIs and stateless services 
+6. Database Design 
+Tables: 
+• User(UserID, Name, Role, Email, Phone, DepartmentID, ManagerID, Status) 
+• AuditLog(AuditID, UserID, Action, EntityType, Timestamp) 
+• Course(CourseID, Title, Category, Level, DurationHours, InstructorID, DeliveryMode, 
+Status) 
+• Module(ModuleID, CourseID, Title, SequenceOrder, ContentType, ContentURL, 
+DurationMinutes) 
+• LearningPath(PathID, Name, TargetRole, CourseSequence, TotalHours, Status) 
+• Enrollment(EnrollmentID, LearnerID, CourseID, EnrollmentDate, DeadlineDate, 
+CompletionDate, ProgressPercent, Status) 
+• ModuleProgress(ProgressID, EnrollmentID, ModuleID, StartedDate, 
+CompletedDate, TimeSpentMinutes, Status) 
+• Assessment(AssessmentID, CourseID, ModuleID, Type, TotalMarks, PassingMarks, 
+MaxAttempts, TimeLimitMinutes, Status) 
+• Question(QuestionID, AssessmentID, QuestionText, Type, Options, CorrectAnswer, 
+Marks) 
+• AttemptRecord(AttemptID, AssessmentID, LearnerID, AttemptNumber, Score, 
+Passed, AttemptDate, TimeTakenMinutes) 
+• Certification(CertificationID, CourseID, LearnerID, IssuedDate, ExpiryDate, 
+CertificateNumber, Status) 
+• Badge(BadgeID, Name, Criteria, CourseID, ImagePath, Status) 
+• BadgeAward(AwardID, BadgeID, LearnerID, AwardedDate, Status) 
+• Instructor(InstructorID, UserID, Specializations, QualificationLevel, RatingAvg, 
+Status) 
+• TrainingSession(SessionID, CourseID, InstructorID, SessionDate, StartTime, 
+EndTime, Venue, MaxCapacity, Status) 
+• SessionRegistration(RegistrationID, SessionID, LearnerID, RegisteredDate, 
+AttendanceStatus) 
+• LearningReport(ReportID, Scope, Metrics, GeneratedDate) 
+• Notification(NotificationID, UserID, Message, Category, Status, CreatedDate) 
+7. User Interface Design 
+• Learner Portal: Course catalog, my learning dashboard, assessment centre, 
+certification wallet 
+• Instructor Console: Course builder, session scheduler, assessment grading, learner 
+progress view 
+• Learning Admin Dashboard: Enrollment tracker, completion reports, path 
+assignment, badge management 
+• HR Manager View: Team skill dashboard, mandatory training compliance, gap 
+analysis reports 
+• Compliance Portal: Regulatory training tracker, overdue report, certification validity 
+dashboard 
+• Admin Console: Catalog configuration, badge rule setup, user and department 
+management 
+8. Non-Functional Requirements 
+• Performance: Support 25,000+ concurrent learners during mandatory training 
+windows 
+• Security: Content access control, RBAC, secure assessment delivery to prevent 
+answer leakage 
+• Scalability: Supports multi-tenant deployment for multiple business units or client 
+organizations 
+• Availability: 99.9% uptime with offline progress sync capability for unreliable network 
+environments 
+• Maintainability: Modular course structure, API versioning, configurable assessment 
+and badge rules 
+• Observability: Real-time learning dashboards, completion pipeline metrics, and 
+compliance alerts 
+9. Assumptions & Constraints 
+• Phase 1 excludes video streaming hosting; content URLs reference internally hosted 
+static files 
+• Live session delivery uses internal virtual room identifiers; video conferencing 
+integration is deferred 
+• All notifications are in-app only; email and calendar integrations are out of Phase 1 
+scope 
+• Assessment anti-cheat mechanisms (proctoring) are out of scope for Phase 1 
+• Fully implementable using standard Java Spring Boot / ASP.NET Core, 
+Angular/React, and RDBMS tooling 
+
