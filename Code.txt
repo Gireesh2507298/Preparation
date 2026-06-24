@@ -1,0 +1,6466 @@
+package com.example.learnvault;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class Application {
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
+}
+package com.example.learnvault.controller;
+import com.example.learnvault.dto.AssessmentDto;
+import com.example.learnvault.service.AssessmentService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+@RestController
+@RequestMapping("/api/assessments")
+public class AssessmentController {
+    @Autowired AssessmentService assessmentService;
+    @PostMapping("/add") public ResponseEntity<AssessmentDto> add(@RequestBody AssessmentDto dto) throws Exception{return new ResponseEntity<>(assessmentService.add(dto),HttpStatus.CREATED);}
+    @GetMapping("/all") public ResponseEntity<List<AssessmentDto>> all(){return new ResponseEntity<>(assessmentService.all(),HttpStatus.OK);}
+    @GetMapping("/{id}") public ResponseEntity<AssessmentDto> byId(@PathVariable Long id) throws Exception{return new ResponseEntity<>(assessmentService.byId(id),HttpStatus.OK);}
+    @PutMapping("/edit") public ResponseEntity<AssessmentDto> edit(@RequestBody AssessmentDto dto) throws Exception{return new ResponseEntity<>(assessmentService.edit(dto),HttpStatus.OK);}
+    @DeleteMapping("/{id}") public ResponseEntity<String> delete(@PathVariable Long id) throws Exception{return new ResponseEntity<>(assessmentService.delete(id),HttpStatus.OK);}
+    @GetMapping("/course/{courseId}") public ResponseEntity<List<AssessmentDto>> byCourse(@PathVariable Long courseId){return new ResponseEntity<>(assessmentService.byCourse(courseId),HttpStatus.OK);}
+}
+package com.example.learnvault.controller;
+
+import com.example.learnvault.dto.AttemptRecordDto;
+import com.example.learnvault.service.AttemptRecordService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/attempts")
+public class AttemptRecordController {
+
+    @Autowired
+    AttemptRecordService attemptRecordService;
+
+    @PostMapping("/add")
+    public ResponseEntity<AttemptRecordDto> add(@RequestBody AttemptRecordDto dto) throws Exception {
+        return new ResponseEntity<>(attemptRecordService.add(dto), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<AttemptRecordDto>> all() {
+        return new ResponseEntity<>(attemptRecordService.all(), HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<AttemptRecordDto> byId(@PathVariable Long id) throws Exception {
+        return new ResponseEntity<>(attemptRecordService.byId(id), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> delete(@PathVariable Long id) throws Exception {
+        return new ResponseEntity<>(attemptRecordService.delete(id), HttpStatus.OK);
+    }
+
+    @GetMapping("/learner/{learnerId}")
+    public ResponseEntity<List<AttemptRecordDto>> byLearner(@PathVariable Long learnerId) {
+        return new ResponseEntity<>(attemptRecordService.byLearner(learnerId), HttpStatus.OK);
+    }
+
+    @GetMapping("/assessment/{assessmentId}")
+    public ResponseEntity<List<AttemptRecordDto>> byAssessment(@PathVariable Long assessmentId) {
+        return new ResponseEntity<>(attemptRecordService.byAssessment(assessmentId), HttpStatus.OK);
+    }
+}
+package com.example.learnvault.controller;
+
+import com.example.learnvault.dto.AuditLogDto;
+import com.example.learnvault.service.AuditLogService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/audit-logs")
+public class AuditLogController {
+	@Autowired
+	AuditLogService auditLogService;
+
+	@PostMapping("/add")
+	public ResponseEntity<AuditLogDto> add(@RequestBody AuditLogDto dto) throws Exception {
+		return new ResponseEntity<>(auditLogService.add(dto), HttpStatus.CREATED);
+	}
+
+	@GetMapping("/all")
+	public ResponseEntity<List<AuditLogDto>> all() {
+		return new ResponseEntity<>(auditLogService.all(), HttpStatus.OK);
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<AuditLogDto> byId(@PathVariable Long id) throws Exception {
+		return new ResponseEntity<>(auditLogService.byId(id), HttpStatus.OK);
+	}
+
+	@GetMapping("/user/{userId}")
+	public ResponseEntity<List<AuditLogDto>> byUser(@PathVariable Long userId) {
+		return new ResponseEntity<>(auditLogService.byUser(userId), HttpStatus.OK);
+	}
+}
+package com.example.learnvault.controller;
+
+
+
+import com.example.learnvault.security.AuthRequest;
+
+import com.example.learnvault.security.AuthResponse;
+
+import com.example.learnvault.security.RegisterRequest;
+
+import com.example.learnvault.service.AuthService;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.http.HttpStatus;
+
+import org.springframework.http.ResponseEntity;
+
+
+import org.springframework.web.bind.annotation.*;
+ 
+@RestController
+@RequestMapping("/api/auth")
+public class AuthController {
+
+	@Autowired
+	AuthService authService;
+ 
+	@PostMapping("/register")
+	public ResponseEntity<String> register(@RequestBody RegisterRequest req) {
+		try {	
+			String s1 = authService.signup(req);
+			return new ResponseEntity<String>(s1,HttpStatus.OK);
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
+	}
+ 
+	@PostMapping("/login")
+	public ResponseEntity<?> login(@RequestBody AuthRequest req) {
+		try {
+			AuthResponse ar = authService.login(req);
+			return new ResponseEntity<AuthResponse>(ar,HttpStatus.OK);
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
+	}
+}
+
+package com.example.learnvault.controller;
+
+import com.example.learnvault.dto.BadgeAwardDto;
+import com.example.learnvault.service.BadgeAwardService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/badge-awards")
+public class BadgeAwardController {
+
+    @Autowired
+    BadgeAwardService badgeAwardService;
+
+    @PostMapping("/add")
+    public ResponseEntity<BadgeAwardDto> add(@RequestBody BadgeAwardDto dto) throws Exception {
+        return new ResponseEntity<>(badgeAwardService.add(dto), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<BadgeAwardDto>> all() {
+        return new ResponseEntity<>(badgeAwardService.all(), HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<BadgeAwardDto> byId(@PathVariable Long id) throws Exception {
+        return new ResponseEntity<>(badgeAwardService.byId(id), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> delete(@PathVariable Long id) throws Exception {
+        return new ResponseEntity<>(badgeAwardService.delete(id), HttpStatus.OK);
+    }
+
+    @GetMapping("/learner/{learnerId}")
+    public ResponseEntity<List<BadgeAwardDto>> byLearner(@PathVariable Long learnerId) {
+        return new ResponseEntity<>(badgeAwardService.byLearner(learnerId), HttpStatus.OK);
+    }
+}
+package com.example.learnvault.controller;
+
+import com.example.learnvault.dto.BadgeDto;
+import com.example.learnvault.service.BadgeService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/badges")
+public class BadgeController {
+
+    @Autowired
+    BadgeService badgeService;
+
+    @PostMapping("/add")
+    public ResponseEntity<BadgeDto> add(@RequestBody BadgeDto dto) throws Exception {
+        return new ResponseEntity<>(badgeService.add(dto), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<BadgeDto>> all() {
+        return new ResponseEntity<>(badgeService.all(), HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<BadgeDto> byId(@PathVariable Long id) throws Exception {
+        return new ResponseEntity<>(badgeService.byId(id), HttpStatus.OK);
+    }
+
+    @PutMapping("/edit")
+    public ResponseEntity<BadgeDto> edit(@RequestBody BadgeDto dto) throws Exception {
+        return new ResponseEntity<>(badgeService.edit(dto), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> delete(@PathVariable Long id) throws Exception {
+        return new ResponseEntity<>(badgeService.delete(id), HttpStatus.OK);
+    }
+}
+package com.example.learnvault.controller;
+import com.example.learnvault.dto.CertificationDto;
+import com.example.learnvault.service.CertificationService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+@RestController
+@RequestMapping("/api/certifications")
+public class CertificationController {
+    @Autowired CertificationService certificationService;
+    @PostMapping("/add") public ResponseEntity<CertificationDto> add(@RequestBody CertificationDto dto) throws Exception{return new ResponseEntity<>(certificationService.add(dto),HttpStatus.CREATED);}
+    @GetMapping("/all") public ResponseEntity<List<CertificationDto>> all(){return new ResponseEntity<>(certificationService.all(),HttpStatus.OK);}
+    @GetMapping("/{id}") public ResponseEntity<CertificationDto> byId(@PathVariable Long id) throws Exception{return new ResponseEntity<>(certificationService.byId(id),HttpStatus.OK);}
+    @PutMapping("/edit") public ResponseEntity<CertificationDto> edit(@RequestBody CertificationDto dto) throws Exception{return new ResponseEntity<>(certificationService.edit(dto),HttpStatus.OK);}
+    @DeleteMapping("/{id}") public ResponseEntity<String> delete(@PathVariable Long id) throws Exception{return new ResponseEntity<>(certificationService.delete(id),HttpStatus.OK);}
+    @GetMapping("/learner/{learnerId}") public ResponseEntity<List<CertificationDto>> byLearner(@PathVariable Long learnerId){return new ResponseEntity<>(certificationService.byLearner(learnerId),HttpStatus.OK);}
+}
+package com.example.learnvault.controller;
+import com.example.learnvault.dto.CourseDto;
+import com.example.learnvault.enums.CourseStatus;
+import com.example.learnvault.service.CourseService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+@RestController
+@RequestMapping("/api/courses")
+public class CourseController {
+    @Autowired CourseService courseService;
+    @PostMapping("/add") public ResponseEntity<CourseDto> add(@RequestBody CourseDto dto) throws Exception{return new ResponseEntity<>(courseService.add(dto),HttpStatus.CREATED);}
+    @GetMapping("/all") public ResponseEntity<List<CourseDto>> all(){return new ResponseEntity<>(courseService.all(),HttpStatus.OK);}
+    @GetMapping("/{id}") public ResponseEntity<CourseDto> byId(@PathVariable Long id) throws Exception{return new ResponseEntity<>(courseService.byId(id),HttpStatus.OK);}
+    @PutMapping("/edit") public ResponseEntity<CourseDto> edit(@RequestBody CourseDto dto) throws Exception{return new ResponseEntity<>(courseService.edit(dto),HttpStatus.OK);}
+    @DeleteMapping("/{id}") public ResponseEntity<String> delete(@PathVariable Long id) throws Exception{return new ResponseEntity<>(courseService.delete(id),HttpStatus.OK);}
+    @GetMapping("/status/{status}") public ResponseEntity<List<CourseDto>> byStatus(@PathVariable CourseStatus status){return new ResponseEntity<>(courseService.byStatus(status),HttpStatus.OK);}
+    @GetMapping("/instructor/{instructorId}") public ResponseEntity<List<CourseDto>> byInstructor(@PathVariable Long instructorId){return new ResponseEntity<>(courseService.byInstructor(instructorId),HttpStatus.OK);}
+}
+package com.example.learnvault.controller;
+
+import com.example.learnvault.dto.EnrollmentDto;
+import com.example.learnvault.enums.EnrollmentStatus;
+import com.example.learnvault.service.EnrollmentService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/enrollments")
+public class EnrollmentController {
+	@Autowired
+	EnrollmentService enrollmentService;
+
+	@PostMapping("/add")
+	public ResponseEntity<EnrollmentDto> add(@RequestBody EnrollmentDto dto) throws Exception {
+		return new ResponseEntity<>(enrollmentService.add(dto), HttpStatus.CREATED);
+	}
+
+	@GetMapping("/all")
+	public ResponseEntity<List<EnrollmentDto>> all() {
+		return new ResponseEntity<>(enrollmentService.all(), HttpStatus.OK);
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<EnrollmentDto> byId(@PathVariable Long id) throws Exception {
+		return new ResponseEntity<>(enrollmentService.byId(id), HttpStatus.OK);
+	}
+
+	@PutMapping("/edit")
+	public ResponseEntity<EnrollmentDto> edit(@RequestBody EnrollmentDto dto) throws Exception {
+		return new ResponseEntity<>(enrollmentService.edit(dto), HttpStatus.OK);
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> delete(@PathVariable Long id) throws Exception {
+		return new ResponseEntity<>(enrollmentService.delete(id), HttpStatus.OK);
+	}
+
+	@GetMapping("/learner/{learnerId}")
+	public ResponseEntity<List<EnrollmentDto>> byLearner(@PathVariable Long learnerId) {
+		return new ResponseEntity<>(enrollmentService.byLearner(learnerId), HttpStatus.OK);
+	}
+
+	@GetMapping("/course/{courseId}")
+	public ResponseEntity<List<EnrollmentDto>> byCourse(@PathVariable Long courseId) {
+		return new ResponseEntity<>(enrollmentService.byCourse(courseId), HttpStatus.OK);
+	}
+
+	@GetMapping("/status/{status}")
+	public ResponseEntity<List<EnrollmentDto>> byStatus(@PathVariable EnrollmentStatus status) {
+		return new ResponseEntity<>(enrollmentService.byStatus(status), HttpStatus.OK);
+	}
+}
+package com.example.learnvault.controller;
+
+import com.example.learnvault.dto.InstructorDto;
+import com.example.learnvault.service.InstructorService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/instructors")
+public class InstructorController {
+	@Autowired
+	InstructorService instructorService;
+
+	@PostMapping("/add")
+	public ResponseEntity<InstructorDto> add(@RequestBody InstructorDto dto) throws Exception {
+		return new ResponseEntity<>(instructorService.add(dto), HttpStatus.CREATED);
+	}
+
+	@GetMapping("/all")
+	public ResponseEntity<List<InstructorDto>> all() {
+		return new ResponseEntity<>(instructorService.all(), HttpStatus.OK);
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<InstructorDto> byId(@PathVariable Long id) throws Exception {
+		return new ResponseEntity<>(instructorService.byId(id), HttpStatus.OK);
+	}
+
+	@PutMapping("/edit")
+	public ResponseEntity<InstructorDto> edit(@RequestBody InstructorDto dto) throws Exception {
+		return new ResponseEntity<>(instructorService.edit(dto), HttpStatus.OK);
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> delete(@PathVariable Long id) throws Exception {
+		return new ResponseEntity<>(instructorService.delete(id), HttpStatus.OK);
+	}
+}
+package com.example.learnvault.controller;
+
+import com.example.learnvault.dto.LearningPathDto;
+import com.example.learnvault.service.LearningPathService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/learningpaths")
+public class LearningPathController {
+	@Autowired
+	LearningPathService learningPathService;
+
+	@PostMapping("/add")
+	public ResponseEntity<LearningPathDto> add(@RequestBody LearningPathDto dto) {
+		return new ResponseEntity<>(learningPathService.add(dto), HttpStatus.CREATED);
+	}
+
+	@GetMapping("/all")
+	public ResponseEntity<List<LearningPathDto>> all() {
+		return new ResponseEntity<>(learningPathService.all(), HttpStatus.OK);
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<LearningPathDto> byId(@PathVariable Long id) throws Exception {
+		return new ResponseEntity<>(learningPathService.byId(id), HttpStatus.OK);
+	}
+
+	@PutMapping("/edit")
+	public ResponseEntity<LearningPathDto> edit(@RequestBody LearningPathDto dto) throws Exception {
+		return new ResponseEntity<>(learningPathService.edit(dto), HttpStatus.OK);
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> delete(@PathVariable Long id) throws Exception {
+		return new ResponseEntity<>(learningPathService.delete(id), HttpStatus.OK);
+	}
+}
+package com.example.learnvault.controller;
+
+import com.example.learnvault.dto.LearningReportDto;
+import com.example.learnvault.service.LearningReportService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/reports")
+public class LearningReportController {
+	@Autowired
+	LearningReportService learningReportService;
+
+	@PostMapping("/add")
+	public ResponseEntity<LearningReportDto> add(@RequestBody LearningReportDto dto) {
+		return new ResponseEntity<>(learningReportService.add(dto), HttpStatus.CREATED);
+	}
+
+	@GetMapping("/all")
+	public ResponseEntity<List<LearningReportDto>> all() {
+		return new ResponseEntity<>(learningReportService.all(), HttpStatus.OK);
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<LearningReportDto> byId(@PathVariable Long id) throws Exception {
+		return new ResponseEntity<>(learningReportService.byId(id), HttpStatus.OK);
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> delete(@PathVariable Long id) throws Exception {
+		return new ResponseEntity<>(learningReportService.delete(id), HttpStatus.OK);
+	}
+}
+package com.example.learnvault.controller;
+
+import com.example.learnvault.dto.ModuleDto;
+import com.example.learnvault.service.ModuleService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/modules")
+public class ModuleController {
+	@Autowired
+	ModuleService moduleService;
+
+	@PostMapping("/add")
+	public ResponseEntity<ModuleDto> add(@RequestBody ModuleDto dto) throws Exception {
+		return new ResponseEntity<>(moduleService.add(dto), HttpStatus.CREATED);
+	}
+
+	@GetMapping("/all")
+	public ResponseEntity<List<ModuleDto>> all() {
+		return new ResponseEntity<>(moduleService.all(), HttpStatus.OK);
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<ModuleDto> byId(@PathVariable Long id) throws Exception {
+		return new ResponseEntity<>(moduleService.byId(id), HttpStatus.OK);
+	}
+
+	@PutMapping("/edit")
+	public ResponseEntity<ModuleDto> edit(@RequestBody ModuleDto dto) throws Exception {
+		return new ResponseEntity<>(moduleService.edit(dto), HttpStatus.OK);
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> delete(@PathVariable Long id) throws Exception {
+		return new ResponseEntity<>(moduleService.delete(id), HttpStatus.OK);
+	}
+
+	@GetMapping("/course/{courseId}")
+	public ResponseEntity<List<ModuleDto>> byCourse(@PathVariable Long courseId) {
+		return new ResponseEntity<>(moduleService.byCourse(courseId), HttpStatus.OK);
+	}
+}
+package com.example.learnvault.controller;
+
+import com.example.learnvault.dto.ModuleProgressDto;
+import com.example.learnvault.service.ModuleProgressService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/moduleprogress")
+public class ModuleProgressController {
+
+    @Autowired
+    ModuleProgressService moduleProgressService;
+
+    @PostMapping("/add")
+    public ResponseEntity<ModuleProgressDto> add(@RequestBody ModuleProgressDto dto) throws Exception {
+        return new ResponseEntity<>(moduleProgressService.add(dto), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<ModuleProgressDto>> all() {
+        return new ResponseEntity<>(moduleProgressService.all(), HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ModuleProgressDto> byId(@PathVariable Long id) throws Exception {
+        return new ResponseEntity<>(moduleProgressService.byId(id), HttpStatus.OK);
+    }
+
+    @PutMapping("/edit")
+    public ResponseEntity<ModuleProgressDto> edit(@RequestBody ModuleProgressDto dto) throws Exception {
+        return new ResponseEntity<>(moduleProgressService.edit(dto), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> delete(@PathVariable Long id) throws Exception {
+        return new ResponseEntity<>(moduleProgressService.delete(id), HttpStatus.OK);
+    }
+
+    @GetMapping("/enrollment/{enrollmentId}")
+    public ResponseEntity<List<ModuleProgressDto>> byEnrollment(@PathVariable Long enrollmentId) {
+        return new ResponseEntity<>(moduleProgressService.byEnrollment(enrollmentId), HttpStatus.OK);
+    }
+}
+package com.example.learnvault.controller;
+
+import com.example.learnvault.dto.NotificationDto;
+import com.example.learnvault.enums.NotificationStatus;
+import com.example.learnvault.service.NotificationService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/notifications")
+public class NotificationController {
+	@Autowired
+	NotificationService notificationService;
+
+	@PostMapping("/add")
+	public ResponseEntity<NotificationDto> add(@RequestBody NotificationDto dto) throws Exception {
+		return new ResponseEntity<>(notificationService.add(dto), HttpStatus.CREATED);
+	}
+
+	@GetMapping("/all")
+	public ResponseEntity<List<NotificationDto>> all() {
+		return new ResponseEntity<>(notificationService.all(), HttpStatus.OK);
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<NotificationDto> byId(@PathVariable Long id) throws Exception {
+		return new ResponseEntity<>(notificationService.byId(id), HttpStatus.OK);
+	}
+
+	@PutMapping("/edit")
+	public ResponseEntity<NotificationDto> edit(@RequestBody NotificationDto dto) throws Exception {
+		return new ResponseEntity<>(notificationService.edit(dto), HttpStatus.OK);
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> delete(@PathVariable Long id) throws Exception {
+		return new ResponseEntity<>(notificationService.delete(id), HttpStatus.OK);
+	}
+
+	@GetMapping("/user/{userId}")
+	public ResponseEntity<List<NotificationDto>> byUser(@PathVariable Long userId) {
+		return new ResponseEntity<>(notificationService.byUser(userId), HttpStatus.OK);
+	}
+
+	@GetMapping("/user/{userId}/status/{status}")
+	public ResponseEntity<List<NotificationDto>> byUserAndStatus(@PathVariable Long userId,
+			@PathVariable NotificationStatus status) {
+		return new ResponseEntity<>(notificationService.byUserAndStatus(userId, status), HttpStatus.OK);
+	}
+}
+package com.example.learnvault.controller;
+
+import com.example.learnvault.dto.QuestionDto;
+import com.example.learnvault.service.QuestionService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/questions")
+public class QuestionController {
+
+    @Autowired
+    QuestionService questionService;
+
+    @PostMapping("/add")
+    public ResponseEntity<QuestionDto> add(@RequestBody QuestionDto dto) throws Exception {
+        return new ResponseEntity<>(questionService.add(dto), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<QuestionDto>> all() {
+        return new ResponseEntity<>(questionService.all(), HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<QuestionDto> byId(@PathVariable Long id) throws Exception {
+        return new ResponseEntity<>(questionService.byId(id), HttpStatus.OK);
+    }
+
+    @PutMapping("/edit")
+    public ResponseEntity<QuestionDto> edit(@RequestBody QuestionDto dto) throws Exception {
+        return new ResponseEntity<>(questionService.edit(dto), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> delete(@PathVariable Long id) throws Exception {
+        return new ResponseEntity<>(questionService.delete(id), HttpStatus.OK);
+    }
+
+    @GetMapping("/assessment/{assessmentId}")
+    public ResponseEntity<List<QuestionDto>> byAssessment(@PathVariable Long assessmentId) {
+        return new ResponseEntity<>(questionService.byAssessment(assessmentId), HttpStatus.OK);
+    }
+}
+package com.example.learnvault.controller;
+
+import com.example.learnvault.dto.SessionRegistrationDto;
+import com.example.learnvault.service.SessionRegistrationService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/registrations")
+public class SessionRegistrationController {
+	@Autowired
+	SessionRegistrationService sessionRegistrationService;
+
+	@PostMapping("/add")
+	public ResponseEntity<SessionRegistrationDto> add(@RequestBody SessionRegistrationDto dto) throws Exception {
+		return new ResponseEntity<>(sessionRegistrationService.add(dto), HttpStatus.CREATED);
+	}
+
+	@GetMapping("/all")
+	public ResponseEntity<List<SessionRegistrationDto>> all() {
+		return new ResponseEntity<>(sessionRegistrationService.all(), HttpStatus.OK);
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<SessionRegistrationDto> byId(@PathVariable Long id) throws Exception {
+		return new ResponseEntity<>(sessionRegistrationService.byId(id), HttpStatus.OK);
+	}
+
+	@PutMapping("/edit")
+	public ResponseEntity<SessionRegistrationDto> edit(@RequestBody SessionRegistrationDto dto) throws Exception {
+		return new ResponseEntity<>(sessionRegistrationService.edit(dto), HttpStatus.OK);
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> delete(@PathVariable Long id) throws Exception {
+		return new ResponseEntity<>(sessionRegistrationService.delete(id), HttpStatus.OK);
+	}
+
+	@GetMapping("/session/{sessionId}")
+	public ResponseEntity<List<SessionRegistrationDto>> bySession(@PathVariable Long sessionId) {
+		return new ResponseEntity<>(sessionRegistrationService.bySession(sessionId), HttpStatus.OK);
+	}
+
+	@GetMapping("/learner/{learnerId}")
+	public ResponseEntity<List<SessionRegistrationDto>> byLearner(@PathVariable Long learnerId) {
+		return new ResponseEntity<>(sessionRegistrationService.byLearner(learnerId), HttpStatus.OK);
+	}
+}
+package com.example.learnvault.controller;
+
+import com.example.learnvault.dto.TrainingSessionDto;
+import com.example.learnvault.enums.SessionStatus;
+import com.example.learnvault.service.TrainingSessionService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/sessions")
+public class TrainingSessionController {
+	@Autowired
+	TrainingSessionService trainingSessionService;
+
+	@PostMapping("/add")
+	public ResponseEntity<TrainingSessionDto> add(@RequestBody TrainingSessionDto dto) throws Exception {
+		return new ResponseEntity<>(trainingSessionService.add(dto), HttpStatus.CREATED);
+	}
+
+	@GetMapping("/all")
+	public ResponseEntity<List<TrainingSessionDto>> all() {
+		return new ResponseEntity<>(trainingSessionService.all(), HttpStatus.OK);
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<TrainingSessionDto> byId(@PathVariable Long id) throws Exception {
+		return new ResponseEntity<>(trainingSessionService.byId(id), HttpStatus.OK);
+	}
+
+	@PutMapping("/edit")
+	public ResponseEntity<TrainingSessionDto> edit(@RequestBody TrainingSessionDto dto) throws Exception {
+		return new ResponseEntity<>(trainingSessionService.edit(dto), HttpStatus.OK);
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> delete(@PathVariable Long id) throws Exception {
+		return new ResponseEntity<>(trainingSessionService.delete(id), HttpStatus.OK);
+	}
+
+	@GetMapping("/instructor/{instructorId}")
+	public ResponseEntity<List<TrainingSessionDto>> byInstructor(@PathVariable Long instructorId) {
+		return new ResponseEntity<>(trainingSessionService.byInstructor(instructorId), HttpStatus.OK);
+	}
+
+	@GetMapping("/status/{status}")
+	public ResponseEntity<List<TrainingSessionDto>> byStatus(@PathVariable SessionStatus status) {
+		return new ResponseEntity<>(trainingSessionService.byStatus(status), HttpStatus.OK);
+	}
+}
+package com.example.learnvault.controller;
+
+import com.example.learnvault.dto.UserDto;
+import com.example.learnvault.enums.Role;
+import com.example.learnvault.enums.UserStatus;
+import com.example.learnvault.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/users")
+public class UserController {
+	@Autowired
+	UserService userService;
+
+	@PostMapping("/add")
+	public ResponseEntity<UserDto> add(@RequestBody UserDto dto) {
+		return new ResponseEntity<>(userService.add(dto), HttpStatus.CREATED);
+	}
+
+	@GetMapping("/all")
+	public ResponseEntity<List<UserDto>> all() {
+		return new ResponseEntity<>(userService.all(), HttpStatus.OK);
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<UserDto> byId(@PathVariable Long id) throws Exception {
+		return new ResponseEntity<>(userService.byId(id), HttpStatus.OK);
+	}
+
+	@PutMapping("/edit")
+	public ResponseEntity<UserDto> edit(@RequestBody UserDto dto) throws Exception {
+		return new ResponseEntity<>(userService.edit(dto), HttpStatus.OK);
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> delete(@PathVariable Long id) throws Exception {
+		return new ResponseEntity<>(userService.delete(id), HttpStatus.OK);
+	}
+
+	@GetMapping("/role/{role}")
+	public ResponseEntity<List<UserDto>> byRole(@PathVariable Role role) {
+		return new ResponseEntity<>(userService.byRole(role), HttpStatus.OK);
+	}
+
+	@GetMapping("/status/{status}")
+	public ResponseEntity<List<UserDto>> byStatus(@PathVariable UserStatus status) {
+		return new ResponseEntity<>(userService.byStatus(status), HttpStatus.OK);
+	}
+}
+package com.example.learnvault.dto;
+
+import com.example.learnvault.enums.*;
+
+public class AssessmentDto {
+    private Long assessmentId;
+    private Long courseId;
+    private Long moduleId;
+    private AssessmentType type;
+    private Integer totalMarks;
+    private Integer passingMarks;
+    private Integer maxAttempts;
+    private Integer timeLimitMinutes;
+    private AssessmentStatus status;
+
+    public AssessmentDto() {
+    }
+
+    public Long getAssessmentId() {
+        return this.assessmentId;
+    }
+
+    public Long getCourseId() {
+        return this.courseId;
+    }
+
+    public Long getModuleId() {
+        return this.moduleId;
+    }
+
+    public AssessmentType getType() {
+        return this.type;
+    }
+
+    public Integer getTotalMarks() {
+        return this.totalMarks;
+    }
+
+    public Integer getPassingMarks() {
+        return this.passingMarks;
+    }
+
+    public Integer getMaxAttempts() {
+        return this.maxAttempts;
+    }
+
+    public Integer getTimeLimitMinutes() {
+        return this.timeLimitMinutes;
+    }
+
+    public AssessmentStatus getStatus() {
+        return this.status;
+    }
+
+    public void setAssessmentId(Long assessmentId) {
+        this.assessmentId = assessmentId;
+    }
+
+    public void setCourseId(Long courseId) {
+        this.courseId = courseId;
+    }
+
+    public void setModuleId(Long moduleId) {
+        this.moduleId = moduleId;
+    }
+
+    public void setType(AssessmentType type) {
+        this.type = type;
+    }
+
+    public void setTotalMarks(Integer totalMarks) {
+        this.totalMarks = totalMarks;
+    }
+
+    public void setPassingMarks(Integer passingMarks) {
+        this.passingMarks = passingMarks;
+    }
+
+    public void setMaxAttempts(Integer maxAttempts) {
+        this.maxAttempts = maxAttempts;
+    }
+
+    public void setTimeLimitMinutes(Integer timeLimitMinutes) {
+        this.timeLimitMinutes = timeLimitMinutes;
+    }
+
+    public void setStatus(AssessmentStatus status) {
+        this.status = status;
+    }
+}package com.example.learnvault.dto;
+
+import java.time.LocalDate;
+
+public class AttemptRecordDto {
+
+    private Long attemptId;
+    private Long assessmentId;
+    private Long learnerId;
+    private Integer attemptNumber;
+    private Double score;
+    private Boolean passed;
+    private LocalDate attemptDate;
+    private Integer timeTakenMinutes;
+
+    public AttemptRecordDto() {
+    }
+
+    public Long getAttemptId() {
+        return this.attemptId;
+    }
+
+    public Long getAssessmentId() {
+        return this.assessmentId;
+    }
+
+    public Long getLearnerId() {
+        return this.learnerId;
+    }
+
+    public Integer getAttemptNumber() {
+        return this.attemptNumber;
+    }
+
+    public Double getScore() {
+        return this.score;
+    }
+
+    public Boolean getPassed() {
+        return this.passed;
+    }
+
+    public LocalDate getAttemptDate() {
+        return this.attemptDate;
+    }
+
+    public Integer getTimeTakenMinutes() {
+        return this.timeTakenMinutes;
+    }
+
+    public void setAttemptId(Long attemptId) {
+        this.attemptId = attemptId;
+    }
+
+    public void setAssessmentId(Long assessmentId) {
+        this.assessmentId = assessmentId;
+    }
+
+    public void setLearnerId(Long learnerId) {
+        this.learnerId = learnerId;
+    }
+
+    public void setAttemptNumber(Integer attemptNumber) {
+        this.attemptNumber = attemptNumber;
+    }
+
+    public void setScore(Double score) {
+        this.score = score;
+    }
+
+    public void setPassed(Boolean passed) {
+        this.passed = passed;
+    }
+
+    public void setAttemptDate(LocalDate attemptDate) {
+        this.attemptDate = attemptDate;
+    }
+
+    public void setTimeTakenMinutes(Integer timeTakenMinutes) {
+        this.timeTakenMinutes = timeTakenMinutes;
+    }
+}
+package com.example.learnvault.dto;
+
+import java.time.LocalDateTime;
+
+public class AuditLogDto {
+
+    private Long auditId;
+    private Long userId;
+    private String action;
+    private String entityType;
+    private LocalDateTime timestamp;
+
+    public AuditLogDto() {
+    }
+
+    public Long getAuditId() {
+        return this.auditId;
+    }
+
+    public Long getUserId() {
+        return this.userId;
+    }
+
+    public String getAction() {
+        return this.action;
+    }
+
+    public String getEntityType() {
+        return this.entityType;
+    }
+
+    public LocalDateTime getTimestamp() {
+        return this.timestamp;
+    }
+
+    public void setAuditId(Long auditId) {
+        this.auditId = auditId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
+    }
+
+    public void setEntityType(String entityType) {
+        this.entityType = entityType;
+    }
+
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+    }
+}package com.example.learnvault.dto;
+
+import com.example.learnvault.enums.AwardStatus;
+import java.time.LocalDate;
+
+public class BadgeAwardDto {
+
+    private Long awardId;
+    private Long badgeId;
+    private Long learnerId;
+    private LocalDate awardedDate;
+    private AwardStatus status;
+
+    public BadgeAwardDto() {
+    }
+
+    public Long getAwardId() {
+        return this.awardId;
+    }
+
+    public Long getBadgeId() {
+        return this.badgeId;
+    }
+
+    public Long getLearnerId() {
+        return this.learnerId;
+    }
+
+    public LocalDate getAwardedDate() {
+        return this.awardedDate;
+    }
+
+    public AwardStatus getStatus() {
+        return this.status;
+    }
+
+    public void setAwardId(Long awardId) {
+        this.awardId = awardId;
+    }
+
+    public void setBadgeId(Long badgeId) {
+        this.badgeId = badgeId;
+    }
+
+    public void setLearnerId(Long learnerId) {
+        this.learnerId = learnerId;
+    }
+
+    public void setAwardedDate(LocalDate awardedDate) {
+        this.awardedDate = awardedDate;
+    }
+
+    public void setStatus(AwardStatus status) {
+        this.status = status;
+    }
+}package com.example.learnvault.dto;
+
+import com.example.learnvault.enums.BadgeStatus;
+
+public class BadgeDto {
+
+    private Long badgeId;
+    private String name;
+    private String criteria;
+    private Long courseId;
+    private String imagePath;
+    private BadgeStatus status;
+
+    public BadgeDto() {
+    }
+
+    public Long getBadgeId() {
+        return this.badgeId;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public String getCriteria() {
+        return this.criteria;
+    }
+
+    public Long getCourseId() {
+        return this.courseId;
+    }
+
+    public String getImagePath() {
+        return this.imagePath;
+    }
+
+    public BadgeStatus getStatus() {
+        return this.status;
+    }
+
+    public void setBadgeId(Long badgeId) {
+        this.badgeId = badgeId;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCriteria(String criteria) {
+        this.criteria = criteria;
+    }
+
+    public void setCourseId(Long courseId) {
+        this.courseId = courseId;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
+    public void setStatus(BadgeStatus status) {
+        this.status = status;
+    }
+}package com.example.learnvault.dto;
+
+import com.example.learnvault.enums.CertificationStatus;
+import java.time.LocalDate;
+
+public class CertificationDto {
+
+    private Long certificationId;
+    private Long courseId;
+    private Long learnerId;
+    private LocalDate issuedDate;
+    private LocalDate expiryDate;
+    private String certificateNumber;
+    private CertificationStatus status;
+
+    public CertificationDto() {
+    }
+
+    public Long getCertificationId() {
+        return this.certificationId;
+    }
+
+    public Long getCourseId() {
+        return this.courseId;
+    }
+
+    public Long getLearnerId() {
+        return this.learnerId;
+    }
+
+    public LocalDate getIssuedDate() {
+        return this.issuedDate;
+    }
+
+    public LocalDate getExpiryDate() {
+        return this.expiryDate;
+    }
+
+    public String getCertificateNumber() {
+        return this.certificateNumber;
+    }
+
+    public CertificationStatus getStatus() {
+        return this.status;
+    }
+
+    public void setCertificationId(Long certificationId) {
+        this.certificationId = certificationId;
+    }
+
+    public void setCourseId(Long courseId) {
+        this.courseId = courseId;
+    }
+
+    public void setLearnerId(Long learnerId) {
+        this.learnerId = learnerId;
+    }
+
+    public void setIssuedDate(LocalDate issuedDate) {
+        this.issuedDate = issuedDate;
+    }
+
+    public void setExpiryDate(LocalDate expiryDate) {
+        this.expiryDate = expiryDate;
+    }
+
+    public void setCertificateNumber(String certificateNumber) {
+        this.certificateNumber = certificateNumber;
+    }
+
+    public void setStatus(CertificationStatus status) {
+        this.status = status;
+    }
+}package com.example.learnvault.dto;
+
+import com.example.learnvault.enums.*;
+
+public class CourseDto {
+
+    private Long courseId;
+    private String title;
+    private String category;
+    private CourseLevel level;
+    private Double durationHours;
+    private Long instructorId;
+    private DeliveryMode deliveryMode;
+    private CourseStatus status;
+
+    public CourseDto() {
+    }
+
+    public Long getCourseId() {
+        return this.courseId;
+    }
+
+    public String getTitle() {
+        return this.title;
+    }
+
+    public String getCategory() {
+        return this.category;
+    }
+
+    public CourseLevel getLevel() {
+        return this.level;
+    }
+
+    public Double getDurationHours() {
+        return this.durationHours;
+    }
+
+    public Long getInstructorId() {
+        return this.instructorId;
+    }
+
+    public DeliveryMode getDeliveryMode() {
+        return this.deliveryMode;
+    }
+
+    public CourseStatus getStatus() {
+        return this.status;
+    }
+
+    public void setCourseId(Long courseId) {
+        this.courseId = courseId;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public void setLevel(CourseLevel level) {
+        this.level = level;
+    }
+
+    public void setDurationHours(Double durationHours) {
+        this.durationHours = durationHours;
+    }
+
+    public void setInstructorId(Long instructorId) {
+        this.instructorId = instructorId;
+    }
+
+    public void setDeliveryMode(DeliveryMode deliveryMode) {
+        this.deliveryMode = deliveryMode;
+    }
+
+    public void setStatus(CourseStatus status) {
+        this.status = status;
+    }
+}package com.example.learnvault.dto;
+
+import com.example.learnvault.enums.EnrollmentStatus;
+import java.time.LocalDate;
+
+public class EnrollmentDto {
+
+    private Long enrollmentId;
+    private Long learnerId;
+    private Long courseId;
+    private LocalDate enrollmentDate;
+    private LocalDate deadlineDate;
+    private LocalDate completionDate;
+    private Double progressPercent;
+    private EnrollmentStatus status;
+
+    public EnrollmentDto() {
+    }
+
+    public Long getEnrollmentId() {
+        return this.enrollmentId;
+    }
+
+    public Long getLearnerId() {
+        return this.learnerId;
+    }
+
+    public Long getCourseId() {
+        return this.courseId;
+    }
+
+    public LocalDate getEnrollmentDate() {
+        return this.enrollmentDate;
+    }
+
+    public LocalDate getDeadlineDate() {
+        return this.deadlineDate;
+    }
+
+    public LocalDate getCompletionDate() {
+        return this.completionDate;
+    }
+
+    public Double getProgressPercent() {
+        return this.progressPercent;
+    }
+
+    public EnrollmentStatus getStatus() {
+        return this.status;
+    }
+
+    public void setEnrollmentId(Long enrollmentId) {
+        this.enrollmentId = enrollmentId;
+    }
+
+    public void setLearnerId(Long learnerId) {
+        this.learnerId = learnerId;
+    }
+
+    public void setCourseId(Long courseId) {
+        this.courseId = courseId;
+    }
+
+    public void setEnrollmentDate(LocalDate enrollmentDate) {
+        this.enrollmentDate = enrollmentDate;
+    }
+
+    public void setDeadlineDate(LocalDate deadlineDate) {
+        this.deadlineDate = deadlineDate;
+    }
+
+    public void setCompletionDate(LocalDate completionDate) {
+        this.completionDate = completionDate;
+    }
+
+    public void setProgressPercent(Double progressPercent) {
+        this.progressPercent = progressPercent;
+    }
+
+    public void setStatus(EnrollmentStatus status) {
+        this.status = status;
+    }
+}package com.example.learnvault.dto;
+
+import com.example.learnvault.enums.UserStatus;
+
+public class InstructorDto {
+
+    private Long instructorId;
+    private Long userId;
+    private String specializations;
+    private String qualificationLevel;
+    private Double ratingAvg;
+    private UserStatus status;
+
+    public InstructorDto() {
+    }
+
+    public Long getInstructorId() {
+        return this.instructorId;
+    }
+
+    public Long getUserId() {
+        return this.userId;
+    }
+
+    public String getSpecializations() {
+        return this.specializations;
+    }
+
+    public String getQualificationLevel() {
+        return this.qualificationLevel;
+    }
+
+    public Double getRatingAvg() {
+        return this.ratingAvg;
+    }
+
+    public UserStatus getStatus() {
+        return this.status;
+    }
+
+    public void setInstructorId(Long instructorId) {
+        this.instructorId = instructorId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public void setSpecializations(String specializations) {
+        this.specializations = specializations;
+    }
+
+    public void setQualificationLevel(String qualificationLevel) {
+        this.qualificationLevel = qualificationLevel;
+    }
+
+    public void setRatingAvg(Double ratingAvg) {
+        this.ratingAvg = ratingAvg;
+    }
+
+    public void setStatus(UserStatus status) {
+        this.status = status;
+    }
+}package com.example.learnvault.dto;
+
+import com.example.learnvault.enums.*;
+
+public class LearningPathDto {
+
+    private Long pathId;
+    private String name;
+    private Role targetRole;
+    private String courseSequence;
+    private Double totalHours;
+    private PathStatus status;
+
+    public LearningPathDto() {
+    }
+
+    public Long getPathId() {
+        return this.pathId;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public Role getTargetRole() {
+        return this.targetRole;
+    }
+
+    public String getCourseSequence() {
+        return this.courseSequence;
+    }
+
+    public Double getTotalHours() {
+        return this.totalHours;
+    }
+
+    public PathStatus getStatus() {
+        return this.status;
+    }
+
+    public void setPathId(Long pathId) {
+        this.pathId = pathId;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setTargetRole(Role targetRole) {
+        this.targetRole = targetRole;
+    }
+
+    public void setCourseSequence(String courseSequence) {
+        this.courseSequence = courseSequence;
+    }
+
+    public void setTotalHours(Double totalHours) {
+        this.totalHours = totalHours;
+    }
+
+    public void setStatus(PathStatus status) {
+        this.status = status;
+    }
+}package com.example.learnvault.dto;
+
+import com.example.learnvault.enums.ReportScope;
+import java.time.LocalDate;
+
+public class LearningReportDto {
+
+    private Long reportId;
+    private ReportScope scope;
+    private String metrics;
+    private LocalDate generatedDate;
+
+    public LearningReportDto() {
+    }
+
+    public Long getReportId() {
+        return this.reportId;
+    }
+
+    public ReportScope getScope() {
+        return this.scope;
+    }
+
+    public String getMetrics() {
+        return this.metrics;
+    }
+
+    public LocalDate getGeneratedDate() {
+        return this.generatedDate;
+    }
+
+    public void setReportId(Long reportId) {
+        this.reportId = reportId;
+    }
+
+    public void setScope(ReportScope scope) {
+        this.scope = scope;
+    }
+
+    public void setMetrics(String metrics) {
+        this.metrics = metrics;
+    }
+
+    public void setGeneratedDate(LocalDate generatedDate) {
+        this.generatedDate = generatedDate;
+    }
+}package com.example.learnvault.dto;
+
+import com.example.learnvault.enums.ContentType;
+
+public class ModuleDto {
+
+    private Long moduleId;
+    private Long courseId;
+    private String title;
+    private Integer sequenceOrder;
+    private ContentType contentType;
+    private String contentUrl;
+    private Integer durationMinutes;
+
+    public ModuleDto() {
+    }
+
+    public Long getModuleId() {
+        return this.moduleId;
+    }
+
+    public Long getCourseId() {
+        return this.courseId;
+    }
+
+    public String getTitle() {
+        return this.title;
+    }
+
+    public Integer getSequenceOrder() {
+        return this.sequenceOrder;
+    }
+
+    public ContentType getContentType() {
+        return this.contentType;
+    }
+
+    public String getContentUrl() {
+        return this.contentUrl;
+    }
+
+    public Integer getDurationMinutes() {
+        return this.durationMinutes;
+    }
+
+    public void setModuleId(Long moduleId) {
+        this.moduleId = moduleId;
+    }
+
+    public void setCourseId(Long courseId) {
+        this.courseId = courseId;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setSequenceOrder(Integer sequenceOrder) {
+        this.sequenceOrder = sequenceOrder;
+    }
+
+    public void setContentType(ContentType contentType) {
+        this.contentType = contentType;
+    }
+
+    public void setContentUrl(String contentUrl) {
+        this.contentUrl = contentUrl;
+    }
+
+    public void setDurationMinutes(Integer durationMinutes) {
+        this.durationMinutes = durationMinutes;
+    }
+}package com.example.learnvault.dto;
+
+import com.example.learnvault.enums.ProgressStatus;
+import java.time.LocalDate;
+
+public class ModuleProgressDto {
+
+    private Long progressId;
+    private Long enrollmentId;
+    private Long moduleId;
+    private LocalDate startedDate;
+    private LocalDate completedDate;
+    private Integer timeSpentMinutes;
+    private ProgressStatus status;
+
+    public ModuleProgressDto() {
+    }
+
+    public Long getProgressId() {
+        return this.progressId;
+    }
+
+    public Long getEnrollmentId() {
+        return this.enrollmentId;
+    }
+
+    public Long getModuleId() {
+        return this.moduleId;
+    }
+
+    public LocalDate getStartedDate() {
+        return this.startedDate;
+    }
+
+    public LocalDate getCompletedDate() {
+        return this.completedDate;
+    }
+
+    public Integer getTimeSpentMinutes() {
+        return this.timeSpentMinutes;
+    }
+
+    public ProgressStatus getStatus() {
+        return this.status;
+    }
+
+    public void setProgressId(Long progressId) {
+        this.progressId = progressId;
+    }
+
+    public void setEnrollmentId(Long enrollmentId) {
+        this.enrollmentId = enrollmentId;
+    }
+
+    public void setModuleId(Long moduleId) {
+        this.moduleId = moduleId;
+    }
+
+    public void setStartedDate(LocalDate startedDate) {
+        this.startedDate = startedDate;
+    }
+
+    public void setCompletedDate(LocalDate completedDate) {
+        this.completedDate = completedDate;
+    }
+
+    public void setTimeSpentMinutes(Integer timeSpentMinutes) {
+        this.timeSpentMinutes = timeSpentMinutes;
+    }
+
+    public void setStatus(ProgressStatus status) {
+        this.status = status;
+    }
+}package com.example.learnvault.dto;
+
+import com.example.learnvault.enums.*;
+import java.time.LocalDateTime;
+
+public class NotificationDto {
+
+    private Long notificationId;
+    private Long userId;
+    private String message;
+    private NotificationCategory category;
+    private NotificationStatus status;
+    private LocalDateTime createdDate;
+
+    public NotificationDto() {
+    }
+
+    public Long getNotificationId() {
+        return this.notificationId;
+    }
+
+    public Long getUserId() {
+        return this.userId;
+    }
+
+    public String getMessage() {
+        return this.message;
+    }
+
+    public NotificationCategory getCategory() {
+        return this.category;
+    }
+
+    public NotificationStatus getStatus() {
+        return this.status;
+    }
+
+    public LocalDateTime getCreatedDate() {
+        return this.createdDate;
+    }
+
+    public void setNotificationId(Long notificationId) {
+        this.notificationId = notificationId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public void setCategory(NotificationCategory category) {
+        this.category = category;
+    }
+
+    public void setStatus(NotificationStatus status) {
+        this.status = status;
+    }
+
+    public void setCreatedDate(LocalDateTime createdDate) {
+        this.createdDate = createdDate;
+    }
+}package com.example.learnvault.dto;
+
+import com.example.learnvault.enums.QuestionType;
+
+public class QuestionDto {
+
+    private Long questionId;
+    private Long assessmentId;
+    private String questionText;
+    private QuestionType type;
+    private String options;
+    private String correctAnswer;
+    private Integer marks;
+
+    public QuestionDto() {
+    }
+
+    public Long getQuestionId() {
+        return this.questionId;
+    }
+
+    public Long getAssessmentId() {
+        return this.assessmentId;
+    }
+
+    public String getQuestionText() {
+        return this.questionText;
+    }
+
+    public QuestionType getType() {
+        return this.type;
+    }
+
+    public String getOptions() {
+        return this.options;
+    }
+
+    public String getCorrectAnswer() {
+        return this.correctAnswer;
+    }
+
+    public Integer getMarks() {
+        return this.marks;
+    }
+
+    public void setQuestionId(Long questionId) {
+        this.questionId = questionId;
+    }
+
+    public void setAssessmentId(Long assessmentId) {
+        this.assessmentId = assessmentId;
+    }
+
+    public void setQuestionText(String questionText) {
+        this.questionText = questionText;
+    }
+
+    public void setType(QuestionType type) {
+        this.type = type;
+    }
+
+    public void setOptions(String options) {
+        this.options = options;
+    }
+
+    public void setCorrectAnswer(String correctAnswer) {
+        this.correctAnswer = correctAnswer;
+    }
+
+    public void setMarks(Integer marks) {
+        this.marks = marks;
+    }
+}package com.example.learnvault.dto;
+
+import com.example.learnvault.enums.AttendanceStatus;
+import java.time.LocalDate;
+
+public class SessionRegistrationDto {
+
+    private Long registrationId;
+    private Long sessionId;
+    private Long learnerId;
+    private LocalDate registeredDate;
+    private AttendanceStatus attendanceStatus;
+
+    public SessionRegistrationDto() {
+    }
+
+    public Long getRegistrationId() {
+        return this.registrationId;
+    }
+
+    public Long getSessionId() {
+        return this.sessionId;
+    }
+
+    public Long getLearnerId() {
+        return this.learnerId;
+    }
+
+    public LocalDate getRegisteredDate() {
+        return this.registeredDate;
+    }
+
+    public AttendanceStatus getAttendanceStatus() {
+        return this.attendanceStatus;
+    }
+
+    public void setRegistrationId(Long registrationId) {
+        this.registrationId = registrationId;
+    }
+
+    public void setSessionId(Long sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    public void setLearnerId(Long learnerId) {
+        this.learnerId = learnerId;
+    }
+
+    public void setRegisteredDate(LocalDate registeredDate) {
+        this.registeredDate = registeredDate;
+    }
+
+    public void setAttendanceStatus(AttendanceStatus attendanceStatus) {
+        this.attendanceStatus = attendanceStatus;
+    }
+}package com.example.learnvault.dto;
+
+import com.example.learnvault.enums.SessionStatus;
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+public class TrainingSessionDto {
+
+    private Long sessionId;
+    private Long courseId;
+    private Long instructorId;
+    private LocalDate sessionDate;
+    private LocalTime startTime;
+    private LocalTime endTime;
+    private String venue;
+    private Integer maxCapacity;
+    private SessionStatus status;
+
+    public TrainingSessionDto() {
+    }
+
+    public Long getSessionId() {
+        return this.sessionId;
+    }
+
+    public Long getCourseId() {
+        return this.courseId;
+    }
+
+    public Long getInstructorId() {
+        return this.instructorId;
+    }
+
+    public LocalDate getSessionDate() {
+        return this.sessionDate;
+    }
+
+    public LocalTime getStartTime() {
+        return this.startTime;
+    }
+
+    public LocalTime getEndTime() {
+        return this.endTime;
+    }
+
+    public String getVenue() {
+        return this.venue;
+    }
+
+    public Integer getMaxCapacity() {
+        return this.maxCapacity;
+    }
+
+    public SessionStatus getStatus() {
+        return this.status;
+    }
+
+    public void setSessionId(Long sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    public void setCourseId(Long courseId) {
+        this.courseId = courseId;
+    }
+
+    public void setInstructorId(Long instructorId) {
+        this.instructorId = instructorId;
+    }
+
+    public void setSessionDate(LocalDate sessionDate) {
+        this.sessionDate = sessionDate;
+    }
+
+    public void setStartTime(LocalTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setEndTime(LocalTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public void setVenue(String venue) {
+        this.venue = venue;
+    }
+
+    public void setMaxCapacity(Integer maxCapacity) {
+        this.maxCapacity = maxCapacity;
+    }
+
+    public void setStatus(SessionStatus status) {
+        this.status = status;
+    }
+}package com.example.learnvault.dto;
+
+import com.example.learnvault.enums.Role;
+import com.example.learnvault.enums.UserStatus;
+
+public class UserDto {
+
+    private Long userId;
+    private String name;
+    private Role role;
+    private String email;
+    private String phone;
+    private String password;
+    private String departmentId;
+    private String managerId;
+    private UserStatus status;
+
+    public UserDto() {
+    }
+
+    public Long getUserId() {
+        return this.userId;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public Role getRole() {
+        return this.role;
+    }
+
+    public String getEmail() {
+        return this.email;
+    }
+
+    public String getPhone() {
+        return this.phone;
+    }
+
+    public String getPassword() {
+        return this.password;
+    }
+
+    public String getDepartmentId() {
+        return this.departmentId;
+    }
+
+    public String getManagerId() {
+        return this.managerId;
+    }
+
+    public UserStatus getStatus() {
+        return this.status;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setDepartmentId(String departmentId) {
+        this.departmentId = departmentId;
+    }
+
+    public void setManagerId(String managerId) {
+        this.managerId = managerId;
+    }
+
+    public void setStatus(UserStatus status) {
+        this.status = status;
+    }
+}package com.example.learnvault.entity;
+
+import com.example.learnvault.enums.*;
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "assessments")
+public class Assessment {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long assessmentId;
+	@ManyToOne
+	@JoinColumn(name = "CourseID")
+	private Course course;
+	@ManyToOne
+	@JoinColumn(name = "ModuleID")
+	private Module module;
+	@Enumerated(EnumType.STRING)
+	private AssessmentType type;
+	private Integer totalMarks;
+	private Integer passingMarks;
+	private Integer maxAttempts;
+	private Integer timeLimitMinutes;
+	@Enumerated(EnumType.STRING)
+	private AssessmentStatus status;
+
+	public Assessment() {
+	}
+
+	public Long getAssessmentId() {
+		return assessmentId;
+	}
+
+	public Course getCourse() {
+		return course;
+	}
+
+	public Module getModule() {
+		return module;
+	}
+
+	public AssessmentType getType() {
+		return type;
+	}
+
+	public Integer getTotalMarks() {
+		return totalMarks;
+	}
+
+	public Integer getPassingMarks() {
+		return passingMarks;
+	}
+
+	public Integer getMaxAttempts() {
+		return maxAttempts;
+	}
+
+	public Integer getTimeLimitMinutes() {
+		return timeLimitMinutes;
+	}
+
+	public AssessmentStatus getStatus() {
+		return status;
+	}
+
+	public void setAssessmentId(Long v) {
+		assessmentId = v;
+	}
+
+	public void setCourse(Course v) {
+		course = v;
+	}
+
+	public void setModule(Module v) {
+		module = v;
+	}
+
+	public void setType(AssessmentType v) {
+		type = v;
+	}
+
+	public void setTotalMarks(Integer v) {
+		totalMarks = v;
+	}
+
+	public void setPassingMarks(Integer v) {
+		passingMarks = v;
+	}
+
+	public void setMaxAttempts(Integer v) {
+		maxAttempts = v;
+	}
+
+	public void setTimeLimitMinutes(Integer v) {
+		timeLimitMinutes = v;
+	}
+
+	public void setStatus(AssessmentStatus v) {
+		status = v;
+	}
+}
+package com.example.learnvault.entity;
+
+import jakarta.persistence.*;
+import java.time.LocalDate;
+
+@Entity
+@Table(name = "attempt_records")
+public class AttemptRecord {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long attemptId;
+	@ManyToOne
+	@JoinColumn(name = "AssessmentID")
+	private Assessment assessment;
+	@ManyToOne
+	@JoinColumn(name = "LearnerID")
+	private User learner;
+	private Integer attemptNumber;
+	private Double score;
+	private Boolean passed;
+	private LocalDate attemptDate;
+	private Integer timeTakenMinutes;
+
+	public AttemptRecord() {
+	}
+
+	public Long getAttemptId() {
+		return attemptId;
+	}
+
+	public Assessment getAssessment() {
+		return assessment;
+	}
+
+	public User getLearner() {
+		return learner;
+	}
+
+	public Integer getAttemptNumber() {
+		return attemptNumber;
+	}
+
+	public Double getScore() {
+		return score;
+	}
+
+	public Boolean getPassed() {
+		return passed;
+	}
+
+	public LocalDate getAttemptDate() {
+		return attemptDate;
+	}
+
+	public Integer getTimeTakenMinutes() {
+		return timeTakenMinutes;
+	}
+
+	public void setAttemptId(Long v) {
+		attemptId = v;
+	}
+
+	public void setAssessment(Assessment v) {
+		assessment = v;
+	}
+
+	public void setLearner(User v) {
+		learner = v;
+	}
+
+	public void setAttemptNumber(Integer v) {
+		attemptNumber = v;
+	}
+
+	public void setScore(Double v) {
+		score = v;
+	}
+
+	public void setPassed(Boolean v) {
+		passed = v;
+	}
+
+	public void setAttemptDate(LocalDate v) {
+		attemptDate = v;
+	}
+
+	public void setTimeTakenMinutes(Integer v) {
+		timeTakenMinutes = v;
+	}
+}
+package com.example.learnvault.entity;
+
+import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "audit_logs")
+public class AuditLog {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long auditId;
+	@ManyToOne
+	@JoinColumn(name = "UserID")
+	private User user;
+	private String action;
+	private String entityType;
+	@CreationTimestamp
+	private LocalDateTime timestamp;
+
+	public AuditLog() {
+	}
+
+	public Long getAuditId() {
+		return auditId;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public String getAction() {
+		return action;
+	}
+
+	public String getEntityType() {
+		return entityType;
+	}
+
+	public LocalDateTime getTimestamp() {
+		return timestamp;
+	}
+
+	public void setAuditId(Long v) {
+		auditId = v;
+	}
+
+	public void setUser(User v) {
+		user = v;
+	}
+
+	public void setAction(String v) {
+		action = v;
+	}
+
+	public void setEntityType(String v) {
+		entityType = v;
+	}
+
+	public void setTimestamp(LocalDateTime v) {
+		timestamp = v;
+	}
+}
+package com.example.learnvault.entity;
+
+import com.example.learnvault.enums.BadgeStatus;
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "badges")
+public class Badge {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long badgeId;
+	private String name;
+	private String criteria;
+	@ManyToOne
+	@JoinColumn(name = "CourseID")
+	private Course course;
+	private String imagePath;
+	@Enumerated(EnumType.STRING)
+	private BadgeStatus status;
+
+	public Badge() {
+	}
+
+	public Long getBadgeId() {
+		return badgeId;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getCriteria() {
+		return criteria;
+	}
+
+	public Course getCourse() {
+		return course;
+	}
+
+	public String getImagePath() {
+		return imagePath;
+	}
+
+	public BadgeStatus getStatus() {
+		return status;
+	}
+
+	public void setBadgeId(Long v) {
+		badgeId = v;
+	}
+
+	public void setName(String v) {
+		name = v;
+	}
+
+	public void setCriteria(String v) {
+		criteria = v;
+	}
+
+	public void setCourse(Course v) {
+		course = v;
+	}
+
+	public void setImagePath(String v) {
+		imagePath = v;
+	}
+
+	public void setStatus(BadgeStatus v) {
+		status = v;
+	}
+}
+package com.example.learnvault.entity;
+
+import com.example.learnvault.enums.AwardStatus;
+import jakarta.persistence.*;
+import java.time.LocalDate;
+
+@Entity
+@Table(name = "badge_awards")
+public class BadgeAward {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long awardId;
+	@ManyToOne
+	@JoinColumn(name = "BadgeID")
+	private Badge badge;
+	@ManyToOne
+	@JoinColumn(name = "LearnerID")
+	private User learner;
+	private LocalDate awardedDate;
+	@Enumerated(EnumType.STRING)
+	private AwardStatus status;
+
+	public BadgeAward() {
+	}
+
+	public Long getAwardId() {
+		return awardId;
+	}
+
+	public Badge getBadge() {
+		return badge;
+	}
+
+	public User getLearner() {
+		return learner;
+	}
+
+	public LocalDate getAwardedDate() {
+		return awardedDate;
+	}
+
+	public AwardStatus getStatus() {
+		return status;
+	}
+
+	public void setAwardId(Long v) {
+		awardId = v;
+	}
+
+	public void setBadge(Badge v) {
+		badge = v;
+	}
+
+	public void setLearner(User v) {
+		learner = v;
+	}
+
+	public void setAwardedDate(LocalDate v) {
+		awardedDate = v;
+	}
+
+	public void setStatus(AwardStatus v) {
+		status = v;
+	}
+}
+package com.example.learnvault.entity;
+
+import com.example.learnvault.enums.CertificationStatus;
+import jakarta.persistence.*;
+import java.time.LocalDate;
+
+@Entity
+@Table(name = "certifications")
+public class Certification {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long certificationId;
+	@ManyToOne
+	@JoinColumn(name = "CourseID")
+	private Course course;
+	@ManyToOne
+	@JoinColumn(name = "LearnerID")
+	private User learner;
+	private LocalDate issuedDate;
+	private LocalDate expiryDate;
+	private String certificateNumber;
+	@Enumerated(EnumType.STRING)
+	private CertificationStatus status;
+
+	public Certification() {
+	}
+
+	public Long getCertificationId() {
+		return certificationId;
+	}
+
+	public Course getCourse() {
+		return course;
+	}
+
+	public User getLearner() {
+		return learner;
+	}
+
+	public LocalDate getIssuedDate() {
+		return issuedDate;
+	}
+
+	public LocalDate getExpiryDate() {
+		return expiryDate;
+	}
+
+	public String getCertificateNumber() {
+		return certificateNumber;
+	}
+
+	public CertificationStatus getStatus() {
+		return status;
+	}
+
+	public void setCertificationId(Long v) {
+		certificationId = v;
+	}
+
+	public void setCourse(Course v) {
+		course = v;
+	}
+
+	public void setLearner(User v) {
+		learner = v;
+	}
+
+	public void setIssuedDate(LocalDate v) {
+		issuedDate = v;
+	}
+
+	public void setExpiryDate(LocalDate v) {
+		expiryDate = v;
+	}
+
+	public void setCertificateNumber(String v) {
+		certificateNumber = v;
+	}
+
+	public void setStatus(CertificationStatus v) {
+		status = v;
+	}
+}
+package com.example.learnvault.entity;
+
+import com.example.learnvault.enums.*;
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "courses")
+public class Course {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long courseId;
+	@Column(nullable = false)
+	private String title;
+	private String category;
+	@Enumerated(EnumType.STRING)
+	private CourseLevel level;
+	private Double durationHours;
+	@ManyToOne
+	@JoinColumn(name = "InstructorID")
+	private Instructor instructor;
+	@Enumerated(EnumType.STRING)
+	private DeliveryMode deliveryMode;
+	@Enumerated(EnumType.STRING)
+	private CourseStatus status;
+
+	public Course() {
+	}
+
+	public Long getCourseId() {
+		return courseId;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public CourseLevel getLevel() {
+		return level;
+	}
+
+	public Double getDurationHours() {
+		return durationHours;
+	}
+
+	public Instructor getInstructor() {
+		return instructor;
+	}
+
+	public DeliveryMode getDeliveryMode() {
+		return deliveryMode;
+	}
+
+	public CourseStatus getStatus() {
+		return status;
+	}
+
+	public void setCourseId(Long v) {
+		courseId = v;
+	}
+
+	public void setTitle(String v) {
+		title = v;
+	}
+
+	public void setCategory(String v) {
+		category = v;
+	}
+
+	public void setLevel(CourseLevel v) {
+		level = v;
+	}
+
+	public void setDurationHours(Double v) {
+		durationHours = v;
+	}
+
+	public void setInstructor(Instructor v) {
+		instructor = v;
+	}
+
+	public void setDeliveryMode(DeliveryMode v) {
+		deliveryMode = v;
+	}
+
+	public void setStatus(CourseStatus v) {
+		status = v;
+	}
+}package com.example.learnvault.entity;
+
+import com.example.learnvault.enums.EnrollmentStatus;
+import jakarta.persistence.*;
+import java.time.LocalDate;
+
+@Entity
+@Table(name = "enrollments")
+public class Enrollment {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long enrollmentId;
+	@ManyToOne
+	@JoinColumn(name = "LearnerID")
+	private User learner;
+	@ManyToOne
+	@JoinColumn(name = "CourseID")
+	private Course course;
+	private LocalDate enrollmentDate;
+	private LocalDate deadlineDate;
+	private LocalDate completionDate;
+	private Double progressPercent;
+	@Enumerated(EnumType.STRING)
+	private EnrollmentStatus status;
+
+	public Enrollment() {
+	}
+
+	public Long getEnrollmentId() {
+		return enrollmentId;
+	}
+
+	public User getLearner() {
+		return learner;
+	}
+
+	public Course getCourse() {
+		return course;
+	}
+
+	public LocalDate getEnrollmentDate() {
+		return enrollmentDate;
+	}
+
+	public LocalDate getDeadlineDate() {
+		return deadlineDate;
+	}
+
+	public LocalDate getCompletionDate() {
+		return completionDate;
+	}
+
+	public Double getProgressPercent() {
+		return progressPercent;
+	}
+
+	public EnrollmentStatus getStatus() {
+		return status;
+	}
+
+	public void setEnrollmentId(Long v) {
+		enrollmentId = v;
+	}
+
+	public void setLearner(User v) {
+		learner = v;
+	}
+
+	public void setCourse(Course v) {
+		course = v;
+	}
+
+	public void setEnrollmentDate(LocalDate v) {
+		enrollmentDate = v;
+	}
+
+	public void setDeadlineDate(LocalDate v) {
+		deadlineDate = v;
+	}
+
+	public void setCompletionDate(LocalDate v) {
+		completionDate = v;
+	}
+
+	public void setProgressPercent(Double v) {
+		progressPercent = v;
+	}
+
+	public void setStatus(EnrollmentStatus v) {
+		status = v;
+	}
+}
+package com.example.learnvault.entity;
+
+import com.example.learnvault.enums.UserStatus;
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "instructors")
+public class Instructor {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long instructorId;
+	@ManyToOne
+	@JoinColumn(name = "UserID")
+	private User user;
+	private String specializations;
+	private String qualificationLevel;
+	private Double ratingAvg;
+	@Enumerated(EnumType.STRING)
+	private UserStatus status;
+
+	public Instructor() {
+	}
+
+	public Long getInstructorId() {
+		return instructorId;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public String getSpecializations() {
+		return specializations;
+	}
+
+	public String getQualificationLevel() {
+		return qualificationLevel;
+	}
+
+	public Double getRatingAvg() {
+		return ratingAvg;
+	}
+
+	public UserStatus getStatus() {
+		return status;
+	}
+
+	public void setInstructorId(Long v) {
+		instructorId = v;
+	}
+
+	public void setUser(User v) {
+		user = v;
+	}
+
+	public void setSpecializations(String v) {
+		specializations = v;
+	}
+
+	public void setQualificationLevel(String v) {
+		qualificationLevel = v;
+	}
+
+	public void setRatingAvg(Double v) {
+		ratingAvg = v;
+	}
+
+	public void setStatus(UserStatus v) {
+		status = v;
+	}
+}
+package com.example.learnvault.entity;
+
+import com.example.learnvault.enums.*;
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "learning_paths")
+public class LearningPath {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long pathId;
+	private String name;
+	@Enumerated(EnumType.STRING)
+	private Role targetRole;
+	private String courseSequence;
+	private Double totalHours;
+	@Enumerated(EnumType.STRING)
+	private PathStatus status;
+
+	public LearningPath() {
+	}
+
+	public Long getPathId() {
+		return pathId;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public Role getTargetRole() {
+		return targetRole;
+	}
+
+	public String getCourseSequence() {
+		return courseSequence;
+	}
+
+	public Double getTotalHours() {
+		return totalHours;
+	}
+
+	public PathStatus getStatus() {
+		return status;
+	}
+
+	public void setPathId(Long v) {
+		pathId = v;
+	}
+
+	public void setName(String v) {
+		name = v;
+	}
+
+	public void setTargetRole(Role v) {
+		targetRole = v;
+	}
+
+	public void setCourseSequence(String v) {
+		courseSequence = v;
+	}
+
+	public void setTotalHours(Double v) {
+		totalHours = v;
+	}
+
+	public void setStatus(PathStatus v) {
+		status = v;
+	}
+}
+package com.example.learnvault.entity;
+
+import com.example.learnvault.enums.ReportScope;
+import jakarta.persistence.*;
+import java.time.LocalDate;
+
+@Entity
+@Table(name = "learning_reports")
+public class LearningReport {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long reportId;
+	@Enumerated(EnumType.STRING)
+	private ReportScope scope;
+	private String metrics;
+	private LocalDate generatedDate;
+
+	public LearningReport() {
+	}
+
+	public Long getReportId() {
+		return reportId;
+	}
+
+	public ReportScope getScope() {
+		return scope;
+	}
+
+	public String getMetrics() {
+		return metrics;
+	}
+
+	public LocalDate getGeneratedDate() {
+		return generatedDate;
+	}
+
+	public void setReportId(Long v) {
+		reportId = v;
+	}
+
+	public void setScope(ReportScope v) {
+		scope = v;
+	}
+
+	public void setMetrics(String v) {
+		metrics = v;
+	}
+
+	public void setGeneratedDate(LocalDate v) {
+		generatedDate = v;
+	}
+}
+package com.example.learnvault.entity;
+
+import com.example.learnvault.enums.ContentType;
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "modules")
+public class Module {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long moduleId;
+	@ManyToOne
+	@JoinColumn(name = "CourseID")
+	private Course course;
+	private String title;
+	private Integer sequenceOrder;
+	@Enumerated(EnumType.STRING)
+	private ContentType contentType;
+	private String contentUrl;
+	private Integer durationMinutes;
+
+	public Module() {
+	}
+
+	public Long getModuleId() {
+		return moduleId;
+	}
+
+	public Course getCourse() {
+		return course;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public Integer getSequenceOrder() {
+		return sequenceOrder;
+	}
+
+	public ContentType getContentType() {
+		return contentType;
+	}
+
+	public String getContentUrl() {
+		return contentUrl;
+	}
+
+	public Integer getDurationMinutes() {
+		return durationMinutes;
+	}
+
+	public void setModuleId(Long v) {
+		moduleId = v;
+	}
+
+	public void setCourse(Course v) {
+		course = v;
+	}
+
+	public void setTitle(String v) {
+		title = v;
+	}
+
+	public void setSequenceOrder(Integer v) {
+		sequenceOrder = v;
+	}
+
+	public void setContentType(ContentType v) {
+		contentType = v;
+	}
+
+	public void setContentUrl(String v) {
+		contentUrl = v;
+	}
+
+	public void setDurationMinutes(Integer v) {
+		durationMinutes = v;
+	}
+}
+package com.example.learnvault.entity;
+
+import com.example.learnvault.enums.ProgressStatus;
+import jakarta.persistence.*;
+import java.time.LocalDate;
+
+@Entity
+@Table(name = "module_progress")
+public class ModuleProgress {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long progressId;
+	@ManyToOne
+	@JoinColumn(name = "EnrollmentID")
+	private Enrollment enrollment;
+	@ManyToOne
+	@JoinColumn(name = "ModuleID")
+	private Module module;
+	private LocalDate startedDate;
+	private LocalDate completedDate;
+	private Integer timeSpentMinutes;
+	@Enumerated(EnumType.STRING)
+	private ProgressStatus status;
+
+	public ModuleProgress() {
+	}
+
+	public Long getProgressId() {
+		return progressId;
+	}
+
+	public Enrollment getEnrollment() {
+		return enrollment;
+	}
+
+	public Module getModule() {
+		return module;
+	}
+
+	public LocalDate getStartedDate() {
+		return startedDate;
+	}
+
+	public LocalDate getCompletedDate() {
+		return completedDate;
+	}
+
+	public Integer getTimeSpentMinutes() {
+		return timeSpentMinutes;
+	}
+
+	public ProgressStatus getStatus() {
+		return status;
+	}
+
+	public void setProgressId(Long v) {
+		progressId = v;
+	}
+
+	public void setEnrollment(Enrollment v) {
+		enrollment = v;
+	}
+
+	public void setModule(Module v) {
+		module = v;
+	}
+
+	public void setStartedDate(LocalDate v) {
+		startedDate = v;
+	}
+
+	public void setCompletedDate(LocalDate v) {
+		completedDate = v;
+	}
+
+	public void setTimeSpentMinutes(Integer v) {
+		timeSpentMinutes = v;
+	}
+
+	public void setStatus(ProgressStatus v) {
+		status = v;
+	}
+}
+package com.example.learnvault.entity;
+
+import com.example.learnvault.enums.*;
+import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "notifications")
+public class Notification {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long notificationId;
+	@ManyToOne
+	@JoinColumn(name = "UserID")
+	private User user;
+	@Column(columnDefinition = "TEXT")
+	private String message;
+	@Enumerated(EnumType.STRING)
+	private NotificationCategory category;
+	@Enumerated(EnumType.STRING)
+	private NotificationStatus status;
+	@CreationTimestamp
+	private LocalDateTime createdDate;
+
+	public Notification() {
+	}
+
+	public Long getNotificationId() {
+		return notificationId;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public NotificationCategory getCategory() {
+		return category;
+	}
+
+	public NotificationStatus getStatus() {
+		return status;
+	}
+
+	public LocalDateTime getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setNotificationId(Long v) {
+		notificationId = v;
+	}
+
+	public void setUser(User v) {
+		user = v;
+	}
+
+	public void setMessage(String v) {
+		message = v;
+	}
+
+	public void setCategory(NotificationCategory v) {
+		category = v;
+	}
+
+	public void setStatus(NotificationStatus v) {
+		status = v;
+	}
+
+	public void setCreatedDate(LocalDateTime v) {
+		createdDate = v;
+	}
+}
+package com.example.learnvault.entity;
+
+import com.example.learnvault.enums.QuestionType;
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "questions")
+public class Question {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long questionId;
+	@ManyToOne
+	@JoinColumn(name = "AssessmentID")
+	private Assessment assessment;
+	@Column(columnDefinition = "TEXT")
+	private String questionText;
+	@Enumerated(EnumType.STRING)
+	private QuestionType type;
+	@Column(columnDefinition = "TEXT")
+	private String options;
+	private String correctAnswer;
+	private Integer marks;
+
+	public Question() {
+	}
+
+	public Long getQuestionId() {
+		return questionId;
+	}
+
+	public Assessment getAssessment() {
+		return assessment;
+	}
+
+	public String getQuestionText() {
+		return questionText;
+	}
+
+	public QuestionType getType() {
+		return type;
+	}
+
+	public String getOptions() {
+		return options;
+	}
+
+	public String getCorrectAnswer() {
+		return correctAnswer;
+	}
+
+	public Integer getMarks() {
+		return marks;
+	}
+
+	public void setQuestionId(Long v) {
+		questionId = v;
+	}
+
+	public void setAssessment(Assessment v) {
+		assessment = v;
+	}
+
+	public void setQuestionText(String v) {
+		questionText = v;
+	}
+
+	public void setType(QuestionType v) {
+		type = v;
+	}
+
+	public void setOptions(String v) {
+		options = v;
+	}
+
+	public void setCorrectAnswer(String v) {
+		correctAnswer = v;
+	}
+
+	public void setMarks(Integer v) {
+		marks = v;
+	}
+}
+package com.example.learnvault.entity;
+
+import com.example.learnvault.enums.AttendanceStatus;
+import jakarta.persistence.*;
+import java.time.LocalDate;
+
+@Entity
+@Table(name = "session_registrations")
+public class SessionRegistration {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long registrationId;
+	@ManyToOne
+	@JoinColumn(name = "SessionID")
+	private TrainingSession session;
+	@ManyToOne
+	@JoinColumn(name = "LearnerID")
+	private User learner;
+	private LocalDate registeredDate;
+	@Enumerated(EnumType.STRING)
+	private AttendanceStatus attendanceStatus;
+
+	public SessionRegistration() {
+	}
+
+	public Long getRegistrationId() {
+		return registrationId;
+	}
+
+	public TrainingSession getSession() {
+		return session;
+	}
+
+	public User getLearner() {
+		return learner;
+	}
+
+	public LocalDate getRegisteredDate() {
+		return registeredDate;
+	}
+
+	public AttendanceStatus getAttendanceStatus() {
+		return attendanceStatus;
+	}
+
+	public void setRegistrationId(Long v) {
+		registrationId = v;
+	}
+
+	public void setSession(TrainingSession v) {
+		session = v;
+	}
+
+	public void setLearner(User v) {
+		learner = v;
+	}
+
+	public void setRegisteredDate(LocalDate v) {
+		registeredDate = v;
+	}
+
+	public void setAttendanceStatus(AttendanceStatus v) {
+		attendanceStatus = v;
+	}
+}
+package com.example.learnvault.entity;
+
+import com.example.learnvault.enums.SessionStatus;
+import jakarta.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+@Entity
+@Table(name = "training_sessions")
+public class TrainingSession {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long sessionId;
+	@ManyToOne
+	@JoinColumn(name = "CourseID")
+	private Course course;
+	@ManyToOne
+	@JoinColumn(name = "InstructorID")
+	private Instructor instructor;
+	private LocalDate sessionDate;
+	private LocalTime startTime;
+	private LocalTime endTime;
+	private String venue;
+	private Integer maxCapacity;
+	@Enumerated(EnumType.STRING)
+	private SessionStatus status;
+
+	public TrainingSession() {
+	}
+
+	public Long getSessionId() {
+		return sessionId;
+	}
+
+	public Course getCourse() {
+		return course;
+	}
+
+	public Instructor getInstructor() {
+		return instructor;
+	}
+
+	public LocalDate getSessionDate() {
+		return sessionDate;
+	}
+
+	public LocalTime getStartTime() {
+		return startTime;
+	}
+
+	public LocalTime getEndTime() {
+		return endTime;
+	}
+
+	public String getVenue() {
+		return venue;
+	}
+
+	public Integer getMaxCapacity() {
+		return maxCapacity;
+	}
+
+	public SessionStatus getStatus() {
+		return status;
+	}
+
+	public void setSessionId(Long v) {
+		sessionId = v;
+	}
+
+	public void setCourse(Course v) {
+		course = v;
+	}
+
+	public void setInstructor(Instructor v) {
+		instructor = v;
+	}
+
+	public void setSessionDate(LocalDate v) {
+		sessionDate = v;
+	}
+
+	public void setStartTime(LocalTime v) {
+		startTime = v;
+	}
+
+	public void setEndTime(LocalTime v) {
+		endTime = v;
+	}
+
+	public void setVenue(String v) {
+		venue = v;
+	}
+
+	public void setMaxCapacity(Integer v) {
+		maxCapacity = v;
+	}
+
+	public void setStatus(SessionStatus v) {
+		status = v;
+	}
+}
+package com.example.learnvault.entity;
+
+import com.example.learnvault.enums.Role;
+import com.example.learnvault.enums.UserStatus;
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "users")
+public class User {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long userId;
+	@Column(nullable = false)
+	private String name;
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private Role role;
+	@Column(nullable = false, unique = true)
+	private String email;
+	private String phone;
+	@Column(nullable = false)
+	private String password;
+	private String departmentId;
+	private String managerId;
+	@Enumerated(EnumType.STRING)
+	private UserStatus status;
+
+	public User() {
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public Role getRole() {
+		return role;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public String getDepartmentId() {
+		return departmentId;
+	}
+
+	public String getManagerId() {
+		return managerId;
+	}
+
+	public UserStatus getStatus() {
+		return status;
+	}
+
+	public void setUserId(Long v) {
+		userId = v;
+	}
+
+	public void setName(String v) {
+		name = v;
+	}
+
+	public void setRole(Role v) {
+		role = v;
+	}
+
+	public void setEmail(String v) {
+		email = v;
+	}
+
+	public void setPhone(String v) {
+		phone = v;
+	}
+
+	public void setPassword(String v) {
+		password = v;
+	}
+
+	public void setDepartmentId(String v) {
+		departmentId = v;
+	}
+
+	public void setManagerId(String v) {
+		managerId = v;
+	}
+
+	public void setStatus(UserStatus v) {
+		status = v;
+	}
+}
+package com.example.learnvault.enums;
+public enum AssessmentStatus { ACTIVE, INACTIVE }
+package com.example.learnvault.enums;
+public enum AssessmentType { QUIZ, ASSIGNMENT, FINAL_EXAM }
+package com.example.learnvault.enums;
+public enum AttendanceStatus { REGISTERED, ATTENDED, ABSENT, WAITLISTED }
+package com.example.learnvault.enums;
+public enum AwardStatus { ACTIVE, REVOKED }
+package com.example.learnvault.enums;
+public enum BadgeStatus { ACTIVE, INACTIVE }
+package com.example.learnvault.enums;
+public enum CertificationStatus { VALID, EXPIRED, REVOKED }
+package com.example.learnvault.enums;
+public enum ContentType { VIDEO, DOCUMENT, QUIZ, ASSIGNMENT }
+package com.example.learnvault.enums;
+public enum CourseLevel { BEGINNER, INTERMEDIATE, ADVANCED }
+package com.example.learnvault.enums;
+public enum CourseStatus { DRAFT, PUBLISHED, ARCHIVED }
+package com.example.learnvault.enums;
+public enum DeliveryMode { SELF_PACED, INSTRUCTOR_LED, BLENDED }
+package com.example.learnvault.enums;
+public enum EnrollmentStatus { ENROLLED, IN_PROGRESS, COMPLETED, DROPPED, OVERDUE }
+package com.example.learnvault.enums;
+public enum NotificationCategory { ENROLLMENT, ASSESSMENT, CERTIFICATION, SESSION, COMPLIANCE }
+package com.example.learnvault.enums;
+public enum NotificationStatus { UNREAD, READ, DISMISSED }
+package com.example.learnvault.enums;
+public enum PathStatus { ACTIVE, INACTIVE }
+package com.example.learnvault.enums;
+public enum ProgressStatus { NOT_STARTED, IN_PROGRESS, COMPLETED }
+package com.example.learnvault.enums;
+public enum QuestionType { MCQ, TRUE_FALSE, SHORT_ANSWER }
+package com.example.learnvault.enums;
+public enum ReportScope { DEPARTMENT, COURSE, LEARNING_PATH, PERIOD }
+package com.example.learnvault.enums;
+public enum Role { LEARNER, INSTRUCTOR, LEARNING_ADMIN, HR_MANAGER, COMPLIANCE_OFFICER, LMS_ADMIN }
+package com.example.learnvault.enums;
+public enum SessionStatus { SCHEDULED, ONGOING, COMPLETED, CANCELLED }
+package com.example.learnvault.enums;
+public enum UserStatus { ACTIVE, INACTIVE, PENDING_OTP, PENDING_APPROVAL, REJECTED }
+package com.example.learnvault.repository;
+import com.example.learnvault.entity.Assessment;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import java.util.List;
+@Repository
+public interface AssessmentRepo extends JpaRepository<Assessment,Long> {
+    List<Assessment> findByCourseCourseId(Long courseId);
+    List<Assessment> findByModuleModuleId(Long moduleId);
+}
+package com.example.learnvault.repository;
+import com.example.learnvault.entity.AttemptRecord;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import java.util.List;
+@Repository
+public interface AttemptRecordRepo extends JpaRepository<AttemptRecord,Long> {
+    List<AttemptRecord> findByLearnerUserId(Long learnerId);
+    List<AttemptRecord> findByAssessmentAssessmentId(Long assessmentId);
+}
+package com.example.learnvault.repository;
+import com.example.learnvault.entity.AuditLog;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import java.util.List;
+@Repository
+public interface AuditLogRepo extends JpaRepository<AuditLog,Long> {
+    List<AuditLog> findByUserUserId(Long userId);
+}
+package com.example.learnvault.repository;
+import com.example.learnvault.entity.BadgeAward;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import java.util.List;
+@Repository
+public interface BadgeAwardRepo extends JpaRepository<BadgeAward,Long> {
+    List<BadgeAward> findByLearnerUserId(Long learnerId);
+    List<BadgeAward> findByBadgeBadgeId(Long badgeId);
+}
+package com.example.learnvault.repository;
+import com.example.learnvault.entity.Badge;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import java.util.List;
+@Repository
+public interface BadgeRepo extends JpaRepository<Badge,Long> {
+    List<Badge> findByCourseCourseId(Long courseId);
+}
+package com.example.learnvault.repository;
+import com.example.learnvault.entity.Certification;
+import com.example.learnvault.enums.CertificationStatus;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import java.util.List;
+@Repository
+public interface CertificationRepo extends JpaRepository<Certification,Long> {
+    List<Certification> findByLearnerUserId(Long learnerId);
+    List<Certification> findByStatus(CertificationStatus status);
+}
+package com.example.learnvault.repository;
+import com.example.learnvault.entity.Course;
+import com.example.learnvault.enums.CourseStatus;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import java.util.List;
+@Repository
+public interface CourseRepo extends JpaRepository<Course,Long> {
+    List<Course> findByStatus(CourseStatus status);
+    List<Course> findByCategory(String category);
+    List<Course> findByInstructorInstructorId(Long instructorId);
+}
+package com.example.learnvault.repository;
+import com.example.learnvault.entity.Enrollment;
+import com.example.learnvault.enums.EnrollmentStatus;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import java.util.List;
+@Repository
+public interface EnrollmentRepo extends JpaRepository<Enrollment,Long> {
+    List<Enrollment> findByLearnerUserId(Long learnerId);
+    List<Enrollment> findByCourseCourseId(Long courseId);
+    List<Enrollment> findByStatus(EnrollmentStatus status);
+    boolean existsByLearnerUserIdAndCourseCourseId(Long learnerId,Long courseId);
+}
+package com.example.learnvault.repository;
+import com.example.learnvault.entity.Instructor;
+import com.example.learnvault.enums.UserStatus;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import java.util.List;
+@Repository
+public interface InstructorRepo extends JpaRepository<Instructor,Long> {
+    List<Instructor> findByStatus(UserStatus status);
+    boolean existsByUserUserId(Long userId);
+}
+package com.example.learnvault.repository;
+import com.example.learnvault.entity.LearningPath;
+import com.example.learnvault.enums.PathStatus;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import java.util.List;
+@Repository
+public interface LearningPathRepo extends JpaRepository<LearningPath,Long> {
+    List<LearningPath> findByStatus(PathStatus status);
+}
+package com.example.learnvault.repository;
+import com.example.learnvault.entity.LearningReport;
+import com.example.learnvault.enums.ReportScope;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import java.util.List;
+@Repository
+public interface LearningReportRepo extends JpaRepository<LearningReport,Long> {
+    List<LearningReport> findByScope(ReportScope scope);
+}
+package com.example.learnvault.repository;
+import com.example.learnvault.entity.ModuleProgress;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import java.util.List;
+@Repository
+public interface ModuleProgressRepo extends JpaRepository<ModuleProgress,Long> {
+    List<ModuleProgress> findByEnrollmentEnrollmentId(Long enrollmentId);
+}
+package com.example.learnvault.repository;
+import com.example.learnvault.entity.Module;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import java.util.List;
+@Repository
+public interface ModuleRepo extends JpaRepository<Module,Long> {
+    List<Module> findByCourseCourseId(Long courseId);
+}
+package com.example.learnvault.repository;
+import com.example.learnvault.entity.Notification;
+import com.example.learnvault.enums.NotificationStatus;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import java.util.List;
+@Repository
+public interface NotificationRepo extends JpaRepository<Notification,Long> {
+    List<Notification> findByUserUserId(Long userId);
+    List<Notification> findByStatus(NotificationStatus status);
+    List<Notification> findByUserUserIdAndStatus(Long userId,NotificationStatus status);
+}
+package com.example.learnvault.repository;
+import com.example.learnvault.entity.Question;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import java.util.List;
+@Repository
+public interface QuestionRepo extends JpaRepository<Question,Long> {
+    List<Question> findByAssessmentAssessmentId(Long assessmentId);
+}
+package com.example.learnvault.repository;
+import com.example.learnvault.entity.SessionRegistration;
+import com.example.learnvault.enums.AttendanceStatus;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import java.util.List;
+@Repository
+public interface SessionRegistrationRepo extends JpaRepository<SessionRegistration,Long> {
+    List<SessionRegistration> findBySessionSessionId(Long sessionId);
+    List<SessionRegistration> findByLearnerUserId(Long learnerId);
+    List<SessionRegistration> findByAttendanceStatus(AttendanceStatus status);
+    boolean existsBySessionSessionIdAndLearnerUserId(Long sessionId,Long learnerId);
+}
+package com.example.learnvault.repository;
+import com.example.learnvault.entity.TrainingSession;
+import com.example.learnvault.enums.SessionStatus;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import java.util.List;
+@Repository
+public interface TrainingSessionRepo extends JpaRepository<TrainingSession,Long> {
+    List<TrainingSession> findByInstructorInstructorId(Long instructorId);
+    List<TrainingSession> findByCourseCourseId(Long courseId);
+    List<TrainingSession> findByStatus(SessionStatus status);
+}
+package com.example.learnvault.repository;
+import com.example.learnvault.entity.User;
+import com.example.learnvault.enums.Role;
+import com.example.learnvault.enums.UserStatus;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import java.util.List; import java.util.Optional;
+@Repository
+public interface UserRepo extends JpaRepository<User,Long> {
+    Optional<User> findByEmail(String email);
+    List<User> findByRole(Role role);
+    List<User> findByStatus(UserStatus status);
+    boolean existsByEmail(String email);
+}
+package com.example.learnvault.security;
+
+public class AuthRequest {
+	private String email;
+	private String password;
+
+	public AuthRequest() {
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setEmail(String v) {
+		email = v;
+	}
+
+	public void setPassword(String v) {
+		password = v;
+	}
+}
+package com.example.learnvault.security;
+
+public class AuthResponse {
+	private String token;
+	private String email;
+	private String role;
+	private String message;
+
+	public AuthResponse() {
+	}
+
+	public AuthResponse(String token, String email, String role, String message) {
+		this.token = token;
+		this.email = email;
+		this.role = role;
+		this.message = message;
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setToken(String v) {
+		token = v;
+	}
+
+	public void setEmail(String v) {
+		email = v;
+	}
+
+	public void setRole(String v) {
+		role = v;
+	}
+
+	public void setMessage(String v) {
+		message = v;
+	}
+}
+package com.example.learnvault.security;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication
+        .UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority
+        .SimpleGrantedAuthority;
+import org.springframework.security.core.context
+        .SecurityContextHolder;
+import org.springframework.security.web.authentication
+        .WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+import java.util.Collections;
+
+@Component
+public class JwtFilter extends OncePerRequestFilter {
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @Override
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain chain)
+            throws ServletException, IOException {
+
+        String header =
+            request.getHeader("Authorization");
+
+        String token = null;
+        String email = null;
+        String role  = null;
+
+        if (header != null
+                && header.startsWith("Bearer ")) {
+            token = header.substring(7);
+            try {
+                email = jwtUtil.extractEmail(token);
+                role  = jwtUtil.extractRole(token);
+            } catch (Exception e) {
+                System.out.println(
+                    "Token error: " + e.getMessage());
+            }
+        }
+
+        if (email != null
+                && role != null
+                && SecurityContextHolder
+                    .getContext()
+                    .getAuthentication() == null) {
+
+            if (!jwtUtil.isExpired(token)) {
+
+                // ROLE_ prefix is required
+                // LEARNER → ROLE_LEARNER
+                // LMS_ADMIN → ROLE_LMS_ADMIN
+                SimpleGrantedAuthority authority =
+                    new SimpleGrantedAuthority(
+                        "ROLE_" + role);
+
+                // print for debugging
+                System.out.println(
+                    "=== JWT AUTH ==="
+                    + " Email:" + email
+                    + " Authority:ROLE_" + role);
+
+                UsernamePasswordAuthenticationToken
+                    authToken =
+                    new UsernamePasswordAuthenticationToken(
+                        email,
+                        null,
+                        Collections.singletonList(
+                            authority));
+
+                authToken.setDetails(
+                    new WebAuthenticationDetailsSource()
+                        .buildDetails(request));
+
+                SecurityContextHolder
+                    .getContext()
+                    .setAuthentication(authToken);
+            }
+        }
+
+        chain.doFilter(request, response);
+    }
+}package com.example.learnvault.security;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import java.security.Key;
+import java.util.Date;
+
+@Component
+public class JwtUtil {
+
+    @Value("${app.jwt.secret}")
+    private String secret;
+
+    @Value("${app.jwt.expiration}")
+    private long expiration;
+
+    private Key getKey() {
+        return Keys.hmacShaKeyFor(secret.getBytes());
+    }
+
+    public String generateToken(String email, String role) {
+        return Jwts.builder()
+                .setSubject(email)
+                .claim("role", role)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(getKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public String extractEmail(String token) {
+        return getClaims(token).getSubject();
+    }
+
+    public String extractRole(String token) {
+        return getClaims(token).get("role", String.class);
+    }
+
+    public boolean isExpired(String token) {
+        return getClaims(token).getExpiration().before(new Date());
+    }
+
+    public boolean validateToken(String token, String email) {
+        return extractEmail(token).equals(email) && !isExpired(token);
+    }
+
+    private Claims getClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+}
+package com.example.learnvault.security;
+
+import com.example.learnvault.enums.Role;
+import com.example.learnvault.enums.UserStatus;
+
+public class RegisterRequest {
+	private String name;
+	private String email;
+	private String password;
+	private String phone;
+	private Role role;
+	private String departmentId;
+	private String managerId;
+	private UserStatus userStatus;
+
+	public RegisterRequest() {
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public Role getRole() {
+		return role;
+	}
+
+	public void setRole(Role role) {
+		this.role = role;
+	}
+
+	public String getDepartmentId() {
+		return departmentId;
+	}
+
+	public void setDepartmentId(String departmentId) {
+		this.departmentId = departmentId;
+	}
+
+	public String getManagerId() {
+		return managerId;
+	}
+
+	public void setManagerId(String managerId) {
+		this.managerId = managerId;
+	}
+
+	public UserStatus getUserStatus() {
+		return userStatus;
+	}
+
+	public void setUserStatus(UserStatus userStatus) {
+		this.userStatus = userStatus;
+	}
+	
+
+	
+}
+package com.example.learnvault.security;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+
+    @Autowired
+    private JwtFilter jwtFilter;
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();     
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+        http
+            .csrf(csrf -> csrf.disable())
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+
+                // ── PUBLIC ────────────────────────────────────────
+                .requestMatchers(
+                    "/api/auth/register",
+                    "/api/auth/login")
+                    .permitAll()
+
+                // ── USERS ── admin only ────────────────────────────
+                .requestMatchers("/api/users/**")
+                    .hasAnyRole(
+                        "LMS_ADMIN",
+                        "LEARNING_ADMIN",
+                        "HR_MANAGER")
+
+                // ── INSTRUCTORS ── admin only ──────────────────────
+                .requestMatchers("/api/instructors/**")
+                    .hasAnyRole(
+                        "LMS_ADMIN",
+                        "LEARNING_ADMIN")
+
+                // ── COURSES ───────────────────────────────────────
+                .requestMatchers(HttpMethod.GET, "/api/courses/**")
+                    .hasAnyRole(
+                        "LMS_ADMIN", "LEARNING_ADMIN",
+                        "INSTRUCTOR", "LEARNER",
+                        "HR_MANAGER", "COMPLIANCE_OFFICER")
+
+                .requestMatchers(HttpMethod.POST, "/api/courses/**")
+                    .hasAnyRole("LMS_ADMIN", "LEARNING_ADMIN")
+
+                .requestMatchers(HttpMethod.PUT, "/api/courses/**")
+                    .hasAnyRole("LMS_ADMIN", "LEARNING_ADMIN")
+
+                .requestMatchers(HttpMethod.DELETE, "/api/courses/**")
+                    .hasAnyRole("LMS_ADMIN")
+
+                // ── MODULES ───────────────────────────────────────
+                .requestMatchers(HttpMethod.GET, "/api/modules/**")
+                    .hasAnyRole(
+                        "LMS_ADMIN", "LEARNING_ADMIN",
+                        "INSTRUCTOR", "LEARNER")
+
+                .requestMatchers(HttpMethod.POST, "/api/modules/**")
+                    .hasAnyRole("LMS_ADMIN", "LEARNING_ADMIN")
+
+                .requestMatchers(HttpMethod.PUT, "/api/modules/**")
+                    .hasAnyRole("LMS_ADMIN", "LEARNING_ADMIN")
+
+                .requestMatchers(HttpMethod.DELETE, "/api/modules/**")
+                    .hasAnyRole("LMS_ADMIN", "LEARNING_ADMIN")
+
+                // ── LEARNING PATH ─────────────────────────────────
+                .requestMatchers("/api/learningpaths/**")
+                    .hasAnyRole(
+                        "LMS_ADMIN", "LEARNING_ADMIN",
+                        "HR_MANAGER", "LEARNER")
+
+                // ── ENROLLMENT ────────────────────────────────────
+                .requestMatchers("/api/enrollments/**")
+                    .hasAnyRole(
+                        "LMS_ADMIN", "LEARNING_ADMIN",
+                        "LEARNER", "HR_MANAGER")
+
+                // ── MODULE PROGRESS ───────────────────────────────
+                .requestMatchers("/api/moduleprogress/**")
+                    .hasAnyRole(
+                        "LMS_ADMIN", "LEARNING_ADMIN",
+                        "INSTRUCTOR", "LEARNER")
+
+                // ── ASSESSMENTS ───────────────────────────────────
+                .requestMatchers(HttpMethod.GET, "/api/assessments/**")
+                    .hasAnyRole(
+                        "LMS_ADMIN", "LEARNING_ADMIN",
+                        "INSTRUCTOR", "LEARNER")
+
+                .requestMatchers(HttpMethod.POST, "/api/assessments/**")
+                    .hasAnyRole(
+                        "LMS_ADMIN", "LEARNING_ADMIN",
+                        "INSTRUCTOR")
+
+                .requestMatchers(HttpMethod.PUT, "/api/assessments/**")
+                    .hasAnyRole(
+                        "LMS_ADMIN", "LEARNING_ADMIN",
+                        "INSTRUCTOR")
+
+                .requestMatchers(HttpMethod.DELETE, "/api/assessments/**")
+                    .hasAnyRole("LMS_ADMIN", "LEARNING_ADMIN")
+
+                // ── QUESTIONS ─────────────────────────────────────
+                .requestMatchers(HttpMethod.GET, "/api/questions/**")
+                    .hasAnyRole(
+                        "LMS_ADMIN", "LEARNING_ADMIN",
+                        "INSTRUCTOR", "LEARNER")
+
+                .requestMatchers(HttpMethod.POST, "/api/questions/**")
+                    .hasAnyRole(
+                        "LMS_ADMIN", "LEARNING_ADMIN",
+                        "INSTRUCTOR")
+
+                .requestMatchers(HttpMethod.PUT, "/api/questions/**")
+                    .hasAnyRole(
+                        "LMS_ADMIN", "LEARNING_ADMIN",
+                        "INSTRUCTOR")
+
+                .requestMatchers(HttpMethod.DELETE, "/api/questions/**")
+                    .hasAnyRole("LMS_ADMIN", "LEARNING_ADMIN")
+
+                // ── ATTEMPT RECORDS ───────────────────────────────
+                .requestMatchers(HttpMethod.GET, "/api/attempts/**")
+                    .hasAnyRole(
+                        "LMS_ADMIN", "LEARNING_ADMIN",
+                        "INSTRUCTOR", "LEARNER")
+
+                .requestMatchers(HttpMethod.POST, "/api/attempts/**")
+                    .hasAnyRole(
+                        "LMS_ADMIN", "LEARNING_ADMIN",
+                        "INSTRUCTOR", "LEARNER")
+
+                .requestMatchers(HttpMethod.DELETE, "/api/attempts/**")
+                    .hasAnyRole("LMS_ADMIN", "LEARNING_ADMIN")
+
+                // ── CERTIFICATION ─────────────────────────────────
+                .requestMatchers(HttpMethod.GET, "/api/certifications/**")
+                    .hasAnyRole(
+                        "LMS_ADMIN", "LEARNING_ADMIN",
+                        "LEARNER", "COMPLIANCE_OFFICER")
+
+                .requestMatchers(HttpMethod.POST, "/api/certifications/**")
+                    .hasAnyRole("LMS_ADMIN", "LEARNING_ADMIN")
+
+                .requestMatchers(HttpMethod.PUT, "/api/certifications/**")
+                    .hasAnyRole("LMS_ADMIN", "LEARNING_ADMIN")
+
+                .requestMatchers(HttpMethod.DELETE, "/api/certifications/**")
+                    .hasAnyRole("LMS_ADMIN")
+
+                // ── BADGES ────────────────────────────────────────
+                .requestMatchers(HttpMethod.GET, "/api/badges/**")
+                    .hasAnyRole(
+                        "LMS_ADMIN", "LEARNING_ADMIN",
+                        "INSTRUCTOR", "LEARNER",
+                        "HR_MANAGER", "COMPLIANCE_OFFICER")
+
+                .requestMatchers(HttpMethod.POST, "/api/badges/**")
+                    .hasAnyRole("LMS_ADMIN", "LEARNING_ADMIN")
+
+                .requestMatchers(HttpMethod.PUT, "/api/badges/**")
+                    .hasAnyRole("LMS_ADMIN", "LEARNING_ADMIN")
+
+                .requestMatchers(HttpMethod.DELETE, "/api/badges/**")
+                    .hasAnyRole("LMS_ADMIN")
+
+                // ── BADGE AWARDS ──────────────────────────────────
+                .requestMatchers(HttpMethod.GET, "/api/badge-awards/**")
+                    .hasAnyRole(
+                        "LMS_ADMIN", "LEARNING_ADMIN",
+                        "LEARNER", "COMPLIANCE_OFFICER")
+
+                .requestMatchers(HttpMethod.POST, "/api/badge-awards/**")
+                    .hasAnyRole("LMS_ADMIN", "LEARNING_ADMIN")
+
+                .requestMatchers(HttpMethod.DELETE, "/api/badge-awards/**")
+                    .hasAnyRole("LMS_ADMIN")
+
+                // ── SESSIONS ──────────────────────────────────────
+                .requestMatchers("/api/sessions/**")
+                    .hasAnyRole(
+                        "LMS_ADMIN", "LEARNING_ADMIN",
+                        "INSTRUCTOR")
+
+                // ── SESSION REGISTRATION ──────────────────────────
+                .requestMatchers("/api/registrations/**")
+                    .hasAnyRole(
+                        "LMS_ADMIN", "LEARNING_ADMIN",
+                        "LEARNER", "INSTRUCTOR")
+
+                // ── NOTIFICATIONS ─────────────────────────────────
+                .requestMatchers("/api/notifications/**")
+                    .hasAnyRole(
+                        "LMS_ADMIN", "LEARNING_ADMIN",
+                        "LEARNER", "INSTRUCTOR",
+                        "HR_MANAGER", "COMPLIANCE_OFFICER")
+
+                // ── REPORTS ── admin only ──────────────────────────
+                .requestMatchers("/api/reports/**")
+                    .hasAnyRole(
+                        "LMS_ADMIN", "LEARNING_ADMIN",
+                        "HR_MANAGER", "COMPLIANCE_OFFICER")
+
+                // ── AUDIT LOGS ── admin only ───────────────────────
+                .requestMatchers("/api/audit-logs/**")
+                    .hasAnyRole("LMS_ADMIN", "LEARNING_ADMIN")
+
+                // everything else needs login
+                .anyRequest().authenticated()
+            )
+            .addFilterBefore(
+                jwtFilter,
+                UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
+    }
+}
+package com.example.learnvault.service;
+import com.example.learnvault.dto.AssessmentDto;
+import java.util.List;
+public interface AssessmentService {
+    AssessmentDto add(AssessmentDto dto) throws Exception;
+    List<AssessmentDto> all();
+    AssessmentDto byId(Long id) throws Exception;
+    AssessmentDto edit(AssessmentDto dto) throws Exception;
+    String delete(Long id) throws Exception;
+    List<AssessmentDto> byCourse(Long courseId);
+}
+package com.example.learnvault.service;
+import com.example.learnvault.dto.AttemptRecordDto;
+import java.util.List;
+public interface AttemptRecordService {
+    AttemptRecordDto add(AttemptRecordDto dto) throws Exception;
+    List<AttemptRecordDto> all();
+    AttemptRecordDto byId(Long id) throws Exception;
+    String delete(Long id) throws Exception;
+    List<AttemptRecordDto> byLearner(Long learnerId);
+    List<AttemptRecordDto> byAssessment(Long assessmentId);
+}
+package com.example.learnvault.service;
+import com.example.learnvault.dto.AuditLogDto;
+import java.util.List;
+public interface AuditLogService {
+    AuditLogDto add(AuditLogDto dto) throws Exception;
+    List<AuditLogDto> all();
+    AuditLogDto byId(Long id) throws Exception;
+    List<AuditLogDto> byUser(Long userId);
+}
+package com.example.learnvault.service;
+ 
+import org.springframework.web.bind.annotation.RequestBody;
+ 
+import com.example.learnvault.security.AuthRequest;
+import com.example.learnvault.security.AuthResponse;
+import com.example.learnvault.security.RegisterRequest;
+ 
+public interface AuthService {
+	
+	AuthResponse login(AuthRequest req)throws Exception;
+	String signup(RegisterRequest req)throws Exception;
+ 
+}
+ 
+ package com.example.learnvault.service;
+import com.example.learnvault.dto.BadgeAwardDto;
+import java.util.List;
+public interface BadgeAwardService {
+    BadgeAwardDto add(BadgeAwardDto dto) throws Exception;
+    List<BadgeAwardDto> all();
+    BadgeAwardDto byId(Long id) throws Exception;
+    String delete(Long id) throws Exception;
+    List<BadgeAwardDto> byLearner(Long learnerId);
+}
+package com.example.learnvault.service;
+import com.example.learnvault.dto.BadgeDto;
+import java.util.List;
+public interface BadgeService {
+    BadgeDto add(BadgeDto dto) throws Exception;
+    List<BadgeDto> all();
+    BadgeDto byId(Long id) throws Exception;
+    BadgeDto edit(BadgeDto dto) throws Exception;
+    String delete(Long id) throws Exception;
+}
+package com.example.learnvault.service;
+import com.example.learnvault.dto.CertificationDto;
+import java.util.List;
+public interface CertificationService {
+    CertificationDto add(CertificationDto dto) throws Exception;
+    List<CertificationDto> all();
+    CertificationDto byId(Long id) throws Exception;
+    CertificationDto edit(CertificationDto dto) throws Exception;
+    String delete(Long id) throws Exception;
+    List<CertificationDto> byLearner(Long learnerId);
+}
+package com.example.learnvault.service;
+import com.example.learnvault.dto.CourseDto;
+import com.example.learnvault.enums.CourseStatus;
+import java.util.List;
+public interface CourseService {
+    CourseDto add(CourseDto dto) throws Exception;
+    List<CourseDto> all();
+    CourseDto byId(Long id) throws Exception;
+    CourseDto edit(CourseDto dto) throws Exception;
+    String delete(Long id) throws Exception;
+    List<CourseDto> byStatus(CourseStatus status);
+    List<CourseDto> byInstructor(Long instructorId);
+}
+package com.example.learnvault.service;
+import com.example.learnvault.dto.EnrollmentDto;
+import com.example.learnvault.enums.EnrollmentStatus;
+import java.util.List;
+public interface EnrollmentService {
+    EnrollmentDto add(EnrollmentDto dto) throws Exception;
+    List<EnrollmentDto> all();
+    EnrollmentDto byId(Long id) throws Exception;
+    EnrollmentDto edit(EnrollmentDto dto) throws Exception;
+    String delete(Long id) throws Exception;
+    List<EnrollmentDto> byLearner(Long learnerId);
+    List<EnrollmentDto> byCourse(Long courseId);
+    List<EnrollmentDto> byStatus(EnrollmentStatus status);
+}
+package com.example.learnvault.service;
+import com.example.learnvault.dto.InstructorDto;
+import java.util.List;
+public interface InstructorService {
+    InstructorDto add(InstructorDto dto) throws Exception;
+    List<InstructorDto> all();
+    InstructorDto byId(Long id) throws Exception;
+    InstructorDto edit(InstructorDto dto) throws Exception;
+    String delete(Long id) throws Exception;
+}
+package com.example.learnvault.service;
+import com.example.learnvault.dto.LearningPathDto;
+import java.util.List;
+public interface LearningPathService {
+    LearningPathDto add(LearningPathDto dto);
+    List<LearningPathDto> all();
+    LearningPathDto byId(Long id) throws Exception;
+    LearningPathDto edit(LearningPathDto dto) throws Exception;
+    String delete(Long id) throws Exception;
+}
+package com.example.learnvault.service;
+import com.example.learnvault.dto.LearningReportDto;
+import java.util.List;
+public interface LearningReportService {
+    LearningReportDto add(LearningReportDto dto);
+    List<LearningReportDto> all();
+    LearningReportDto byId(Long id) throws Exception;
+    String delete(Long id) throws Exception;
+}
+package com.example.learnvault.service;
+import com.example.learnvault.dto.ModuleProgressDto;
+import java.util.List;
+public interface ModuleProgressService {
+    ModuleProgressDto add(ModuleProgressDto dto) throws Exception;
+    List<ModuleProgressDto> all();
+    ModuleProgressDto byId(Long id) throws Exception;
+    ModuleProgressDto edit(ModuleProgressDto dto) throws Exception;
+    String delete(Long id) throws Exception;
+    List<ModuleProgressDto> byEnrollment(Long enrollmentId);
+}
+package com.example.learnvault.service;
+import com.example.learnvault.dto.ModuleDto;
+import java.util.List;
+public interface ModuleService {
+    ModuleDto add(ModuleDto dto) throws Exception;
+    List<ModuleDto> all();
+    ModuleDto byId(Long id) throws Exception;
+    ModuleDto edit(ModuleDto dto) throws Exception;
+    String delete(Long id) throws Exception;
+    List<ModuleDto> byCourse(Long courseId);
+}
+package com.example.learnvault.service;
+import com.example.learnvault.dto.NotificationDto;
+import com.example.learnvault.enums.NotificationStatus;
+import java.util.List;
+public interface NotificationService {
+    NotificationDto add(NotificationDto dto) throws Exception;
+    List<NotificationDto> all();
+    NotificationDto byId(Long id) throws Exception;
+    NotificationDto edit(NotificationDto dto) throws Exception;
+    String delete(Long id) throws Exception;
+    List<NotificationDto> byUser(Long userId);
+    List<NotificationDto> byUserAndStatus(Long userId, NotificationStatus status);
+}
+package com.example.learnvault.service;
+import com.example.learnvault.dto.QuestionDto;
+import java.util.List;
+public interface QuestionService {
+    QuestionDto add(QuestionDto dto) throws Exception;
+    List<QuestionDto> all();
+    QuestionDto byId(Long id) throws Exception;
+    QuestionDto edit(QuestionDto dto) throws Exception;
+    String delete(Long id) throws Exception;
+    List<QuestionDto> byAssessment(Long assessmentId);
+}
+package com.example.learnvault.service;
+import com.example.learnvault.dto.SessionRegistrationDto;
+import java.util.List;
+public interface SessionRegistrationService {
+    SessionRegistrationDto add(SessionRegistrationDto dto) throws Exception;
+    List<SessionRegistrationDto> all();
+    SessionRegistrationDto byId(Long id) throws Exception;
+    SessionRegistrationDto edit(SessionRegistrationDto dto) throws Exception;
+    String delete(Long id) throws Exception;
+    List<SessionRegistrationDto> bySession(Long sessionId);
+    List<SessionRegistrationDto> byLearner(Long learnerId);
+}
+package com.example.learnvault.service;
+import com.example.learnvault.dto.TrainingSessionDto;
+import com.example.learnvault.enums.SessionStatus;
+import java.util.List;
+public interface TrainingSessionService {
+    TrainingSessionDto add(TrainingSessionDto dto) throws Exception;
+    List<TrainingSessionDto> all();
+    TrainingSessionDto byId(Long id) throws Exception;
+    TrainingSessionDto edit(TrainingSessionDto dto) throws Exception;
+    String delete(Long id) throws Exception;
+    List<TrainingSessionDto> byInstructor(Long instructorId);
+    List<TrainingSessionDto> byStatus(SessionStatus status);
+}
+package com.example.learnvault.service;
+import com.example.learnvault.dto.UserDto;
+import com.example.learnvault.enums.Role;
+import com.example.learnvault.enums.UserStatus;
+import java.util.List;
+public interface UserService {
+    UserDto add(UserDto dto);
+    List<UserDto> all();
+    UserDto byId(Long id) throws Exception;
+    UserDto edit(UserDto dto) throws Exception;
+    String delete(Long id) throws Exception;
+    List<UserDto> byRole(Role role);
+    List<UserDto> byStatus(UserStatus status);
+}
+package com.example.learnvault.serviceimplementation;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.example.learnvault.dto.AssessmentDto;
+import com.example.learnvault.entity.Assessment;
+import com.example.learnvault.entity.Course;
+import com.example.learnvault.entity.Module;
+import com.example.learnvault.repository.AssessmentRepo;
+import com.example.learnvault.repository.CourseRepo;
+import com.example.learnvault.repository.ModuleRepo;
+import com.example.learnvault.service.AssessmentService;
+
+@Service
+public class AssessmentServiceImpl implements AssessmentService {
+	@Autowired
+	AssessmentRepo assessmentRepo;
+	@Autowired
+	CourseRepo courseRepo;
+	@Autowired
+	ModuleRepo moduleRepo;
+
+	private AssessmentDto toDto(Assessment r) {
+		AssessmentDto d = new AssessmentDto();
+		d.setAssessmentId(r.getAssessmentId());
+		d.setCourseId(r.getCourse().getCourseId());
+		if (r.getModule() != null)
+			d.setModuleId(r.getModule().getModuleId());
+		d.setType(r.getType());
+		d.setTotalMarks(r.getTotalMarks());
+		d.setPassingMarks(r.getPassingMarks());
+		d.setMaxAttempts(r.getMaxAttempts());
+		d.setTimeLimitMinutes(r.getTimeLimitMinutes());
+		d.setStatus(r.getStatus());
+		return d;
+	}
+
+	@Override
+	public AssessmentDto add(AssessmentDto dto) throws Exception {
+		Course c = courseRepo.findById(dto.getCourseId()).orElseThrow(() -> new Exception("Course not found"));
+		Module m = dto.getModuleId() != null ? moduleRepo.findById(dto.getModuleId()).orElse(null) : null;
+		Assessment r = new Assessment();
+		r.setCourse(c);
+		r.setModule(m);
+		r.setType(dto.getType());
+		r.setTotalMarks(dto.getTotalMarks());
+		r.setPassingMarks(dto.getPassingMarks());
+		r.setMaxAttempts(dto.getMaxAttempts());
+		r.setTimeLimitMinutes(dto.getTimeLimitMinutes());
+		r.setStatus(dto.getStatus());
+		Assessment res = assessmentRepo.save(r);
+		dto.setAssessmentId(res.getAssessmentId());
+		return dto;
+	}
+
+	@Override
+	public List<AssessmentDto> all() {
+		List<Assessment> list = assessmentRepo.findAll();
+		List<AssessmentDto> dl = new ArrayList<>();
+		for (Assessment r : list)
+			dl.add(toDto(r));
+		return dl;
+	}
+
+	@Override
+	public AssessmentDto byId(Long id) throws Exception {
+		Assessment r = assessmentRepo.findById(id).orElseThrow(() -> new Exception("Assessment not found:" + id));
+		return toDto(r);
+	}
+
+	@Override
+	public AssessmentDto edit(AssessmentDto dto) throws Exception {
+		Assessment s = assessmentRepo.findById(dto.getAssessmentId())
+				.orElseThrow(() -> new Exception("Assessment not found"));
+		if (dto.getStatus() != null)
+			s.setStatus(dto.getStatus());
+		if (dto.getTotalMarks() != null)
+			s.setTotalMarks(dto.getTotalMarks());
+		if (dto.getPassingMarks() != null)
+			s.setPassingMarks(dto.getPassingMarks());
+		assessmentRepo.save(s);
+		return dto;
+	}
+
+	@Override
+	public String delete(Long id) throws Exception {
+		assessmentRepo.findById(id).orElseThrow(() -> new Exception("Assessment not found:" + id));
+		assessmentRepo.deleteById(id);
+		return "Assessment deleted";
+	}
+
+	@Override
+	public List<AssessmentDto> byCourse(Long courseId) {
+		List<Assessment> list = assessmentRepo.findByCourseCourseId(courseId);
+		List<AssessmentDto> dl = new ArrayList<>();
+		for (Assessment r : list)
+			dl.add(toDto(r));
+		return dl;
+	}
+}
+package com.example.learnvault.serviceimplementation;
+
+import com.example.learnvault.dto.AttemptRecordDto;
+import com.example.learnvault.entity.Assessment;
+import com.example.learnvault.entity.AttemptRecord;
+import com.example.learnvault.entity.User;
+import com.example.learnvault.repository.AssessmentRepo;
+import com.example.learnvault.repository.AttemptRecordRepo;
+import com.example.learnvault.repository.UserRepo;
+import com.example.learnvault.service.AttemptRecordService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+public class AttemptRecordServiceImpl implements AttemptRecordService {
+
+	@Autowired
+	AttemptRecordRepo attemptRecordRepo;
+
+	@Autowired
+	AssessmentRepo assessmentRepo;
+
+	@Autowired
+	UserRepo userRepo;
+
+	private AttemptRecordDto toDto(AttemptRecord r) {
+		AttemptRecordDto d = new AttemptRecordDto();
+		d.setAttemptId(r.getAttemptId());
+		d.setAssessmentId(r.getAssessment().getAssessmentId());
+		d.setLearnerId(r.getLearner().getUserId());
+		d.setAttemptNumber(r.getAttemptNumber());
+		d.setScore(r.getScore());
+		d.setPassed(r.getPassed());
+		d.setAttemptDate(r.getAttemptDate());
+		d.setTimeTakenMinutes(r.getTimeTakenMinutes());
+		return d;
+	}
+
+	@Override
+	public AttemptRecordDto add(AttemptRecordDto dto) throws Exception {
+		Assessment assessment = assessmentRepo.findById(dto.getAssessmentId())
+				.orElseThrow(() -> new Exception("Assessment not found: " + dto.getAssessmentId()));
+		User learner = userRepo.findById(dto.getLearnerId())
+				.orElseThrow(() -> new Exception("Learner not found: " + dto.getLearnerId()));
+
+		AttemptRecord r = new AttemptRecord();
+		r.setAssessment(assessment);
+		r.setLearner(learner);
+		r.setAttemptNumber(dto.getAttemptNumber());
+		r.setScore(dto.getScore());
+		r.setPassed(dto.getPassed());
+		r.setAttemptDate(dto.getAttemptDate());
+		r.setTimeTakenMinutes(dto.getTimeTakenMinutes());
+
+		AttemptRecord saved = attemptRecordRepo.save(r);
+		dto.setAttemptId(saved.getAttemptId());
+		return dto;
+	}
+
+	@Override
+	public List<AttemptRecordDto> all() {
+		List<AttemptRecord> list = attemptRecordRepo.findAll();
+		List<AttemptRecordDto> dtos = new ArrayList<>();
+		for (AttemptRecord r : list)
+			dtos.add(toDto(r));
+		return dtos;
+	}
+
+	@Override
+	public AttemptRecordDto byId(Long id) throws Exception {
+		AttemptRecord r = attemptRecordRepo.findById(id)
+				.orElseThrow(() -> new Exception("Attempt record not found: " + id));
+		return toDto(r);
+	}
+
+	@Override
+	public String delete(Long id) throws Exception {
+		attemptRecordRepo.findById(id).orElseThrow(() -> new Exception("Attempt record not found: " + id));
+		attemptRecordRepo.deleteById(id);
+		return "Attempt record deleted";
+	}
+
+	@Override
+	public List<AttemptRecordDto> byLearner(Long learnerId) {
+		List<AttemptRecord> list = attemptRecordRepo.findByLearnerUserId(learnerId);
+		List<AttemptRecordDto> dtos = new ArrayList<>();
+		for (AttemptRecord r : list)
+			dtos.add(toDto(r));
+		return dtos;
+	}
+
+	@Override
+	public List<AttemptRecordDto> byAssessment(Long assessmentId) {
+		List<AttemptRecord> list = attemptRecordRepo.findByAssessmentAssessmentId(assessmentId);
+		List<AttemptRecordDto> dtos = new ArrayList<>();
+		for (AttemptRecord r : list)
+			dtos.add(toDto(r));
+		return dtos;
+	}
+}
+package com.example.learnvault.serviceimplementation;
+
+import com.example.learnvault.dto.AuditLogDto;
+import com.example.learnvault.entity.AuditLog;
+import com.example.learnvault.entity.User;
+import com.example.learnvault.repository.AuditLogRepo;
+import com.example.learnvault.repository.UserRepo;
+import com.example.learnvault.service.AuditLogService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+public class AuditLogServiceImpl implements AuditLogService {
+	@Autowired
+	AuditLogRepo auditLogRepo;
+	@Autowired
+	UserRepo userRepo;
+
+	private AuditLogDto toDto(AuditLog r) {
+		AuditLogDto d = new AuditLogDto();
+		d.setAuditId(r.getAuditId());
+		d.setUserId(r.getUser().getUserId());
+		d.setAction(r.getAction());
+		d.setEntityType(r.getEntityType());
+		d.setTimestamp(r.getTimestamp());
+		return d;
+	}
+
+	@Override
+	public AuditLogDto add(AuditLogDto dto) throws Exception {
+		User u = userRepo.findById(dto.getUserId()).orElseThrow(() -> new Exception("User not found"));
+		AuditLog r = new AuditLog();
+		r.setUser(u);
+		r.setAction(dto.getAction());
+		r.setEntityType(dto.getEntityType());
+		AuditLog res = auditLogRepo.save(r);
+		dto.setAuditId(res.getAuditId());
+		return dto;
+	}
+
+	@Override
+	public List<AuditLogDto> all() {
+		List<AuditLog> list = auditLogRepo.findAll();
+		List<AuditLogDto> dl = new ArrayList<>();
+		for (AuditLog r : list)
+			dl.add(toDto(r));
+		return dl;
+	}
+
+	@Override
+	public AuditLogDto byId(Long id) throws Exception {
+		AuditLog r = auditLogRepo.findById(id).orElseThrow(() -> new Exception("AuditLog not found:" + id));
+		return toDto(r);
+	}
+
+	@Override
+	public List<AuditLogDto> byUser(Long userId) {
+		List<AuditLog> list = auditLogRepo.findByUserUserId(userId);
+		List<AuditLogDto> dl = new ArrayList<>();
+		for (AuditLog r : list)
+			dl.add(toDto(r));
+		return dl;
+	}
+}
+package com.example.learnvault.serviceimplementation;
+ 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+ 
+import com.example.learnvault.dto.AuditLogDto;
+import com.example.learnvault.entity.User;
+import com.example.learnvault.enums.Role;
+import com.example.learnvault.enums.UserStatus;
+import com.example.learnvault.repository.UserRepo;
+import com.example.learnvault.security.AuthRequest;
+import com.example.learnvault.security.AuthResponse;
+import com.example.learnvault.security.JwtUtil;
+import com.example.learnvault.security.RegisterRequest;
+import com.example.learnvault.service.AuditLogService;
+import com.example.learnvault.service.AuthService;
+@Service
+public class AuthServiceImplementation implements AuthService {
+ 
+	@Autowired
+	UserRepo userRepo;
+	@Autowired
+	JwtUtil jwtUtil;
+	@Autowired
+	PasswordEncoder passwordEncoder;
+	@Autowired
+	AuditLogService auditLogService;
+ 
+	@Override
+	public AuthResponse login(AuthRequest req) {
+ 
+	    User user = userRepo.findByEmail(req.getEmail()).orElse(null);
+ 
+	    // ✅ Invalid email or password
+	    if (user == null || !passwordEncoder.matches(req.getPassword(), user.getPassword())) {
+ 
+	        if (user != null) {
+	            try {
+	                AuditLogDto log = new AuditLogDto();
+	                log.setUserId(user.getUserId());
+	                log.setAction("LOGIN_FAILED");
+	                log.setEntityType("User");
+	                auditLogService.add(log);
+	            } catch (Exception ignored) {}
+	        }
+ 
+	        return new AuthResponse(null, null, null, "Invalid email or password");
+	    }
+ 
+	    // ✅ Inactive account
+	    if (user.getStatus() == UserStatus.INACTIVE) {
+	        return new AuthResponse(null, null, null, "Account is inactive");
+	    }
+ 
+	    // ✅ Generate token
+	    String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
+ 
+	    // ✅ Successful login audit
+	    try {
+	        AuditLogDto log = new AuditLogDto();
+	        log.setUserId(user.getUserId());
+	        log.setAction("LOGIN_SUCCESS");
+	        log.setEntityType("User");
+	        auditLogService.add(log);
+	    } catch (Exception ignored) {}
+ 
+	    return new AuthResponse(token, user.getEmail(), user.getRole().name(), "Login successful");
+	}
+ 
+	@Override
+	public String signup(RegisterRequest req) throws Exception {
+		if (userRepo.existsByEmail(req.getEmail())) {
+			throw new Exception("Email already exists");
+		}
+		
+		User user = new User();
+		user.setEmail(req.getEmail());
+		user.setDepartmentId(req.getDepartmentId());
+		user.setManagerId(req.getManagerId());
+		user.setPassword(passwordEncoder.encode(req.getPassword()));
+		user.setPhone(req.getPhone());
+		user.setRole(req.getRole());
+		user.setStatus(req.getUserStatus());
+		user.setName(req.getName());
+		User saved = userRepo.save(user);
+		try {
+			AuditLogDto log = new AuditLogDto();
+			log.setUserId(saved.getUserId());
+			log.setAction("USER_REGISTERED");
+			log.setEntityType("User");
+			auditLogService.add(log);
+		} catch (Exception ignored) {
+		}
+		return "User registered successfully. Please login.";
+	}
+ 
+}
+ 
+ 
+ package com.example.learnvault.serviceimplementation;
+
+import com.example.learnvault.dto.BadgeAwardDto;
+import com.example.learnvault.entity.Badge;
+import com.example.learnvault.entity.BadgeAward;
+import com.example.learnvault.entity.User;
+import com.example.learnvault.repository.BadgeAwardRepo;
+import com.example.learnvault.repository.BadgeRepo;
+import com.example.learnvault.repository.UserRepo;
+import com.example.learnvault.service.BadgeAwardService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+public class BadgeAwardServiceImpl implements BadgeAwardService {
+
+    @Autowired
+    BadgeAwardRepo badgeAwardRepo;
+
+    @Autowired
+    BadgeRepo badgeRepo;
+
+    @Autowired
+    UserRepo userRepo;
+
+    private BadgeAwardDto toDto(BadgeAward r) {
+        BadgeAwardDto d = new BadgeAwardDto();
+        d.setAwardId(r.getAwardId());
+        d.setBadgeId(r.getBadge().getBadgeId());
+        d.setLearnerId(r.getLearner().getUserId());
+        d.setAwardedDate(r.getAwardedDate());
+        d.setStatus(r.getStatus());
+        return d;
+    }
+
+    @Override
+    public BadgeAwardDto add(BadgeAwardDto dto) throws Exception {
+        Badge badge = badgeRepo.findById(dto.getBadgeId())
+                .orElseThrow(() -> new Exception("Badge not found: " + dto.getBadgeId()));
+        User learner = userRepo.findById(dto.getLearnerId())
+                .orElseThrow(() -> new Exception("Learner not found: " + dto.getLearnerId()));
+
+        BadgeAward r = new BadgeAward();
+        r.setBadge(badge);
+        r.setLearner(learner);
+        r.setAwardedDate(dto.getAwardedDate());
+        r.setStatus(dto.getStatus());
+
+        BadgeAward saved = badgeAwardRepo.save(r);
+        dto.setAwardId(saved.getAwardId());
+        return dto;
+    }
+
+    @Override
+    public List<BadgeAwardDto> all() {
+        List<BadgeAward> list = badgeAwardRepo.findAll();
+        List<BadgeAwardDto> dtos = new ArrayList<>();
+        for (BadgeAward r : list) dtos.add(toDto(r));
+        return dtos;
+    }
+
+    @Override
+    public BadgeAwardDto byId(Long id) throws Exception {
+        BadgeAward r = badgeAwardRepo.findById(id)
+                .orElseThrow(() -> new Exception("Badge award not found: " + id));
+        return toDto(r);
+    }
+
+    @Override
+    public String delete(Long id) throws Exception {
+        badgeAwardRepo.findById(id)
+                .orElseThrow(() -> new Exception("Badge award not found: " + id));
+        badgeAwardRepo.deleteById(id);
+        return "Badge award deleted";
+    }
+
+    @Override
+    public List<BadgeAwardDto> byLearner(Long learnerId) {
+        List<BadgeAward> list = badgeAwardRepo.findByLearnerUserId(learnerId);
+        List<BadgeAwardDto> dtos = new ArrayList<>();
+        for (BadgeAward r : list) dtos.add(toDto(r));
+        return dtos;
+    }
+}
+package com.example.learnvault.serviceimplementation;
+
+import com.example.learnvault.dto.BadgeDto;
+import com.example.learnvault.entity.Badge;
+import com.example.learnvault.entity.Course;
+import com.example.learnvault.repository.BadgeRepo;
+import com.example.learnvault.repository.CourseRepo;
+import com.example.learnvault.service.BadgeService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+public class BadgeServiceImpl implements BadgeService {
+
+    @Autowired
+    BadgeRepo badgeRepo;
+
+    @Autowired
+    CourseRepo courseRepo;
+
+    private BadgeDto toDto(Badge b) {
+        BadgeDto d = new BadgeDto();
+        d.setBadgeId(b.getBadgeId());
+        d.setName(b.getName());
+        d.setCriteria(b.getCriteria());
+        d.setCourseId(b.getCourse().getCourseId());
+        d.setImagePath(b.getImagePath());
+        d.setStatus(b.getStatus());
+        return d;
+    }
+
+    @Override
+    public BadgeDto add(BadgeDto dto) throws Exception {
+        Course course = courseRepo.findById(dto.getCourseId())
+                .orElseThrow(() -> new Exception("Course not found: " + dto.getCourseId()));
+
+        Badge b = new Badge();
+        b.setName(dto.getName());
+        b.setCriteria(dto.getCriteria());
+        b.setCourse(course);
+        b.setImagePath(dto.getImagePath());
+        b.setStatus(dto.getStatus());
+
+        Badge saved = badgeRepo.save(b);
+        dto.setBadgeId(saved.getBadgeId());
+        return dto;
+    }
+
+    @Override
+    public List<BadgeDto> all() {
+        List<Badge> list = badgeRepo.findAll();
+        List<BadgeDto> dtos = new ArrayList<>();
+        for (Badge b : list) dtos.add(toDto(b));
+        return dtos;
+    }
+
+    @Override
+    public BadgeDto byId(Long id) throws Exception {
+        Badge b = badgeRepo.findById(id)
+                .orElseThrow(() -> new Exception("Badge not found: " + id));
+        return toDto(b);
+    }
+
+    @Override
+    public BadgeDto edit(BadgeDto dto) throws Exception {
+        Badge b = badgeRepo.findById(dto.getBadgeId())
+                .orElseThrow(() -> new Exception("Badge not found: " + dto.getBadgeId()));
+
+        if (dto.getName() != null) b.setName(dto.getName());
+        if (dto.getCriteria() != null) b.setCriteria(dto.getCriteria());
+        if (dto.getImagePath() != null) b.setImagePath(dto.getImagePath());
+        if (dto.getStatus() != null) b.setStatus(dto.getStatus());
+
+        badgeRepo.save(b);
+        return dto;
+    }
+
+    @Override
+    public String delete(Long id) throws Exception {
+        badgeRepo.findById(id)
+                .orElseThrow(() -> new Exception("Badge not found: " + id));
+        badgeRepo.deleteById(id);
+        return "Badge deleted";
+    }
+}
+package com.example.learnvault.serviceimplementation;
+
+import com.example.learnvault.dto.CertificationDto;
+import com.example.learnvault.entity.*;
+import com.example.learnvault.repository.*;
+import com.example.learnvault.service.CertificationService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+public class CertificationServiceImpl implements CertificationService {
+	@Autowired
+	CertificationRepo certificationRepo;
+	@Autowired
+	CourseRepo courseRepo;
+	@Autowired
+	UserRepo userRepo;
+
+	private CertificationDto toDto(Certification r) {
+		CertificationDto d = new CertificationDto();
+		d.setCertificationId(r.getCertificationId());
+		d.setCourseId(r.getCourse().getCourseId());
+		d.setLearnerId(r.getLearner().getUserId());
+		d.setIssuedDate(r.getIssuedDate());
+		d.setExpiryDate(r.getExpiryDate());
+		d.setCertificateNumber(r.getCertificateNumber());
+		d.setStatus(r.getStatus());
+		return d;
+	}
+
+	@Override
+	public CertificationDto add(CertificationDto dto) throws Exception {
+		Course c = courseRepo.findById(dto.getCourseId()).orElseThrow(() -> new Exception("Course not found"));
+		User u = userRepo.findById(dto.getLearnerId()).orElseThrow(() -> new Exception("User not found"));
+		Certification r = new Certification();
+		r.setCourse(c);
+		r.setLearner(u);
+		r.setIssuedDate(dto.getIssuedDate());
+		r.setExpiryDate(dto.getExpiryDate());
+		r.setCertificateNumber(dto.getCertificateNumber());
+		r.setStatus(dto.getStatus());
+		Certification res = certificationRepo.save(r);
+		dto.setCertificationId(res.getCertificationId());
+		return dto;
+	}
+
+	@Override
+	public List<CertificationDto> all() {
+		List<Certification> list = certificationRepo.findAll();
+		List<CertificationDto> dl = new ArrayList<>();
+		for (Certification r : list)
+			dl.add(toDto(r));
+		return dl;
+	}
+
+	@Override
+	public CertificationDto byId(Long id) throws Exception {
+		Certification r = certificationRepo.findById(id)
+				.orElseThrow(() -> new Exception("Certification not found:" + id));
+		return toDto(r);
+	}
+
+	@Override
+	public CertificationDto edit(CertificationDto dto) throws Exception {
+		Certification s = certificationRepo.findById(dto.getCertificationId())
+				.orElseThrow(() -> new Exception("Certification not found"));
+		if (dto.getStatus() != null)
+			s.setStatus(dto.getStatus());
+		if (dto.getExpiryDate() != null)
+			s.setExpiryDate(dto.getExpiryDate());
+		certificationRepo.save(s);
+		return dto;
+	}
+
+	@Override
+	public String delete(Long id) throws Exception {
+		certificationRepo.findById(id).orElseThrow(() -> new Exception("Certification not found:" + id));
+		certificationRepo.deleteById(id);
+		return "Certification deleted";
+	}
+
+	@Override
+	public List<CertificationDto> byLearner(Long learnerId) {
+		List<Certification> list = certificationRepo.findByLearnerUserId(learnerId);
+		List<CertificationDto> dl = new ArrayList<>();
+		for (Certification r : list)
+			dl.add(toDto(r));
+		return dl;
+	}
+}
+package com.example.learnvault.serviceimplementation;
+
+import com.example.learnvault.dto.CourseDto;
+import com.example.learnvault.entity.Course;
+import com.example.learnvault.entity.Instructor;
+import com.example.learnvault.enums.CourseStatus;
+import com.example.learnvault.repository.CourseRepo;
+import com.example.learnvault.repository.InstructorRepo;
+import com.example.learnvault.service.CourseService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+public class CourseServiceImpl implements CourseService {
+	@Autowired
+	CourseRepo courseRepo;
+	@Autowired
+	InstructorRepo instructorRepo;
+
+	private CourseDto toDto(Course r) {
+		CourseDto d = new CourseDto();
+		d.setCourseId(r.getCourseId());
+		d.setTitle(r.getTitle());
+		d.setCategory(r.getCategory());
+		d.setLevel(r.getLevel());
+		d.setDurationHours(r.getDurationHours());
+		d.setInstructorId(r.getInstructor().getInstructorId());
+		d.setDeliveryMode(r.getDeliveryMode());
+		d.setStatus(r.getStatus());
+		return d;
+	}
+
+	@Override
+	public CourseDto add(CourseDto dto) throws Exception {
+		Instructor inst = instructorRepo.findById(dto.getInstructorId())
+				.orElseThrow(() -> new Exception("Instructor not found"));
+		Course r = new Course();
+		r.setTitle(dto.getTitle());
+		r.setCategory(dto.getCategory());
+		r.setLevel(dto.getLevel());
+		r.setDurationHours(dto.getDurationHours());
+		r.setInstructor(inst);
+		r.setDeliveryMode(dto.getDeliveryMode());
+		r.setStatus(dto.getStatus());
+		Course res = courseRepo.save(r);
+		dto.setCourseId(res.getCourseId());
+		return dto;
+	}
+
+	@Override
+	public List<CourseDto> all() {
+		List<Course> list = courseRepo.findAll();
+		List<CourseDto> dl = new ArrayList<>();
+		for (Course r : list)
+			dl.add(toDto(r));
+		return dl;
+	}
+
+	@Override
+	public CourseDto byId(Long id) throws Exception {
+		Course r = courseRepo.findById(id).orElseThrow(() -> new Exception("Course not found:" + id));
+		return toDto(r);
+	}
+
+	@Override
+	public CourseDto edit(CourseDto dto) throws Exception {
+		Course s = courseRepo.findById(dto.getCourseId()).orElseThrow(() -> new Exception("Course not found"));
+		Instructor inst = instructorRepo
+				.findById(dto.getInstructorId() != null ? dto.getInstructorId() : s.getInstructor().getInstructorId())
+				.orElseThrow(() -> new Exception("Instructor not found"));
+		if (dto.getTitle() == null)
+			dto.setTitle(s.getTitle());
+		if (dto.getCategory() == null)
+			dto.setCategory(s.getCategory());
+		if (dto.getLevel() == null)
+			dto.setLevel(s.getLevel());
+		if (dto.getDurationHours() == null)
+			dto.setDurationHours(s.getDurationHours());
+		if (dto.getDeliveryMode() == null)
+			dto.setDeliveryMode(s.getDeliveryMode());
+		if (dto.getStatus() == null)
+			dto.setStatus(s.getStatus());
+		Course r = new Course();
+		r.setCourseId(dto.getCourseId());
+		r.setTitle(dto.getTitle());
+		r.setCategory(dto.getCategory());
+		r.setLevel(dto.getLevel());
+		r.setDurationHours(dto.getDurationHours());
+		r.setInstructor(inst);
+		r.setDeliveryMode(dto.getDeliveryMode());
+		r.setStatus(dto.getStatus());
+		courseRepo.save(r);
+		return dto;
+	}
+
+	@Override
+	public String delete(Long id) throws Exception {
+		courseRepo.findById(id).orElseThrow(() -> new Exception("Course not found:" + id));
+		courseRepo.deleteById(id);
+		return "Course deleted";
+	}
+
+	@Override
+	public List<CourseDto> byStatus(CourseStatus status) {
+		List<Course> list = courseRepo.findByStatus(status);
+		List<CourseDto> dl = new ArrayList<>();
+		for (Course r : list)
+			dl.add(toDto(r));
+		return dl;
+	}
+
+	@Override
+	public List<CourseDto> byInstructor(Long instructorId) {
+		List<Course> list = courseRepo.findByInstructorInstructorId(instructorId);
+		List<CourseDto> dl = new ArrayList<>();
+		for (Course r : list)
+			dl.add(toDto(r));
+		return dl;
+	}
+}
+package com.example.learnvault.serviceimplementation;
+
+import com.example.learnvault.dto.EnrollmentDto;
+import com.example.learnvault.entity.*;
+import com.example.learnvault.enums.EnrollmentStatus;
+import com.example.learnvault.repository.*;
+import com.example.learnvault.service.EnrollmentService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+public class EnrollmentServiceImpl implements EnrollmentService {
+	@Autowired
+	EnrollmentRepo enrollmentRepo;
+	@Autowired
+	UserRepo userRepo;
+	@Autowired
+	CourseRepo courseRepo;
+
+	private EnrollmentDto toDto(Enrollment r) {
+		EnrollmentDto d = new EnrollmentDto();
+		d.setEnrollmentId(r.getEnrollmentId());
+		d.setLearnerId(r.getLearner().getUserId());
+		d.setCourseId(r.getCourse().getCourseId());
+		d.setEnrollmentDate(r.getEnrollmentDate());
+		d.setDeadlineDate(r.getDeadlineDate());
+		d.setCompletionDate(r.getCompletionDate());
+		d.setProgressPercent(r.getProgressPercent());
+		d.setStatus(r.getStatus());
+		return d;
+	}
+
+	@Override
+	public EnrollmentDto add(EnrollmentDto dto) throws Exception {
+		if (enrollmentRepo.existsByLearnerUserIdAndCourseCourseId(dto.getLearnerId(), dto.getCourseId()))
+			throw new RuntimeException("Already enrolled");
+		User learner = userRepo.findById(dto.getLearnerId()).orElseThrow(() -> new Exception("User not found"));
+		Course course = courseRepo.findById(dto.getCourseId()).orElseThrow(() -> new Exception("Course not found"));
+		Enrollment r = new Enrollment();
+		r.setLearner(learner);
+		r.setCourse(course);
+		r.setEnrollmentDate(dto.getEnrollmentDate());
+		r.setDeadlineDate(dto.getDeadlineDate());
+		r.setProgressPercent(0.0);
+		r.setStatus(EnrollmentStatus.ENROLLED);
+		Enrollment res = enrollmentRepo.save(r);
+		dto.setEnrollmentId(res.getEnrollmentId());
+		return dto;
+	}
+
+	@Override
+	public List<EnrollmentDto> all() {
+		List<Enrollment> list = enrollmentRepo.findAll();
+		List<EnrollmentDto> dl = new ArrayList<>();
+		for (Enrollment r : list)
+			dl.add(toDto(r));
+		return dl;
+	}
+
+	@Override
+	public EnrollmentDto byId(Long id) throws Exception {
+		Enrollment r = enrollmentRepo.findById(id).orElseThrow(() -> new Exception("Enrollment not found:" + id));
+		return toDto(r);
+	}
+
+	@Override
+	public EnrollmentDto edit(EnrollmentDto dto) throws Exception {
+		Enrollment s = enrollmentRepo.findById(dto.getEnrollmentId())
+				.orElseThrow(() -> new Exception("Enrollment not found"));
+		if (dto.getProgressPercent() != null)
+			s.setProgressPercent(dto.getProgressPercent());
+		if (dto.getStatus() != null)
+			s.setStatus(dto.getStatus());
+		if (dto.getCompletionDate() != null)
+			s.setCompletionDate(dto.getCompletionDate());
+		enrollmentRepo.save(s);
+		return dto;
+	}
+
+	@Override
+	public String delete(Long id) throws Exception {
+		enrollmentRepo.findById(id).orElseThrow(() -> new Exception("Enrollment not found:" + id));
+		enrollmentRepo.deleteById(id);
+		return "Enrollment deleted";
+	}
+
+	@Override
+	public List<EnrollmentDto> byLearner(Long learnerId) {
+		List<Enrollment> list = enrollmentRepo.findByLearnerUserId(learnerId);
+		List<EnrollmentDto> dl = new ArrayList<>();
+		for (Enrollment r : list)
+			dl.add(toDto(r));
+		return dl;
+	}
+
+	@Override
+	public List<EnrollmentDto> byCourse(Long courseId) {
+		List<Enrollment> list = enrollmentRepo.findByCourseCourseId(courseId);
+		List<EnrollmentDto> dl = new ArrayList<>();
+		for (Enrollment r : list)
+			dl.add(toDto(r));
+		return dl;
+	}
+
+	@Override
+	public List<EnrollmentDto> byStatus(EnrollmentStatus status) {
+		List<Enrollment> list = enrollmentRepo.findByStatus(status);
+		List<EnrollmentDto> dl = new ArrayList<>();
+		for (Enrollment r : list)
+			dl.add(toDto(r));
+		return dl;
+	}
+}
+package com.example.learnvault.serviceimplementation;
+
+import com.example.learnvault.dto.InstructorDto;
+import com.example.learnvault.entity.Instructor;
+import com.example.learnvault.entity.User;
+import com.example.learnvault.repository.InstructorRepo;
+import com.example.learnvault.repository.UserRepo;
+import com.example.learnvault.service.InstructorService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+public class InstructorServiceImpl implements InstructorService {
+	@Autowired
+	InstructorRepo instructorRepo;
+	@Autowired
+	UserRepo userRepo;
+
+	private InstructorDto toDto(Instructor r) {
+		InstructorDto d = new InstructorDto();
+		d.setInstructorId(r.getInstructorId());
+		d.setUserId(r.getUser().getUserId());
+		d.setSpecializations(r.getSpecializations());
+		d.setQualificationLevel(r.getQualificationLevel());
+		d.setRatingAvg(r.getRatingAvg());
+		d.setStatus(r.getStatus());
+		return d;
+	}
+
+	@Override
+	public InstructorDto add(InstructorDto dto) throws Exception {
+		if (instructorRepo.existsByUserUserId(dto.getUserId()))
+			throw new RuntimeException("Instructor exists for userId:" + dto.getUserId());
+		User user = userRepo.findById(dto.getUserId()).orElseThrow(() -> new Exception("User not found"));
+		Instructor r = new Instructor();
+		r.setUser(user);
+		r.setSpecializations(dto.getSpecializations());
+		r.setQualificationLevel(dto.getQualificationLevel());
+		r.setRatingAvg(dto.getRatingAvg());
+		r.setStatus(dto.getStatus());
+		Instructor res = instructorRepo.save(r);
+		dto.setInstructorId(res.getInstructorId());
+		return dto;
+	}
+
+	@Override
+	public List<InstructorDto> all() {
+		List<Instructor> list = instructorRepo.findAll();
+		List<InstructorDto> dl = new ArrayList<>();
+		for (Instructor r : list)
+			dl.add(toDto(r));
+		return dl;
+	}
+
+	@Override
+	public InstructorDto byId(Long id) throws Exception {
+		Instructor r = instructorRepo.findById(id).orElseThrow(() -> new Exception("Instructor not found:" + id));
+		return toDto(r);
+	}
+
+	@Override
+	public InstructorDto edit(InstructorDto dto) throws Exception {
+		Instructor s = instructorRepo.findById(dto.getInstructorId())
+				.orElseThrow(() -> new Exception("Instructor not found"));
+		if (dto.getSpecializations() == null)
+			dto.setSpecializations(s.getSpecializations());
+		if (dto.getQualificationLevel() == null)
+			dto.setQualificationLevel(s.getQualificationLevel());
+		if (dto.getRatingAvg() == null)
+			dto.setRatingAvg(s.getRatingAvg());
+		if (dto.getStatus() == null)
+			dto.setStatus(s.getStatus());
+		Instructor r = new Instructor();
+		r.setInstructorId(dto.getInstructorId());
+		r.setUser(s.getUser());
+		r.setSpecializations(dto.getSpecializations());
+		r.setQualificationLevel(dto.getQualificationLevel());
+		r.setRatingAvg(dto.getRatingAvg());
+		r.setStatus(dto.getStatus());
+		instructorRepo.save(r);
+		return dto;
+	}
+
+	@Override
+	public String delete(Long id) throws Exception {
+		instructorRepo.findById(id).orElseThrow(() -> new Exception("Instructor not found:" + id));
+		instructorRepo.deleteById(id);
+		return "Instructor deleted";
+	}
+}
+package com.example.learnvault.serviceimplementation;
+
+import com.example.learnvault.dto.LearningPathDto;
+import com.example.learnvault.entity.LearningPath;
+import com.example.learnvault.repository.LearningPathRepo;
+import com.example.learnvault.service.LearningPathService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+public class LearningPathServiceImpl implements LearningPathService {
+	@Autowired
+	LearningPathRepo learningPathRepo;
+
+	private LearningPathDto toDto(LearningPath r) {
+		LearningPathDto d = new LearningPathDto();
+		d.setPathId(r.getPathId());
+		d.setName(r.getName());
+		d.setTargetRole(r.getTargetRole());
+		d.setCourseSequence(r.getCourseSequence());
+		d.setTotalHours(r.getTotalHours());
+		d.setStatus(r.getStatus());
+		return d;
+	}
+
+	@Override
+	public LearningPathDto add(LearningPathDto dto) {
+		LearningPath r = new LearningPath();
+		r.setName(dto.getName());
+		r.setTargetRole(dto.getTargetRole());
+		r.setCourseSequence(dto.getCourseSequence());
+		r.setTotalHours(dto.getTotalHours());
+		r.setStatus(dto.getStatus());
+		LearningPath res = learningPathRepo.save(r);
+		dto.setPathId(res.getPathId());
+		return dto;
+	}
+
+	@Override
+	public List<LearningPathDto> all() {
+		List<LearningPath> list = learningPathRepo.findAll();
+		List<LearningPathDto> dl = new ArrayList<>();
+		for (LearningPath r : list)
+			dl.add(toDto(r));
+		return dl;
+	}
+
+	@Override
+	public LearningPathDto byId(Long id) throws Exception {
+		LearningPath r = learningPathRepo.findById(id).orElseThrow(() -> new Exception("LearningPath not found:" + id));
+		return toDto(r);
+	}
+
+	@Override
+	public LearningPathDto edit(LearningPathDto dto) throws Exception {
+		LearningPath s = learningPathRepo.findById(dto.getPathId())
+				.orElseThrow(() -> new Exception("LearningPath not found"));
+		if (dto.getName() == null)
+			dto.setName(s.getName());
+		if (dto.getStatus() == null)
+			dto.setStatus(s.getStatus());
+		s.setName(dto.getName());
+		s.setStatus(dto.getStatus());
+		learningPathRepo.save(s);
+		return dto;
+	}
+
+	@Override
+	public String delete(Long id) throws Exception {
+		learningPathRepo.findById(id).orElseThrow(() -> new Exception("LearningPath not found:" + id));
+		learningPathRepo.deleteById(id);
+		return "LearningPath deleted";
+	}
+}
+package com.example.learnvault.serviceimplementation;
+
+import com.example.learnvault.dto.LearningReportDto;
+import com.example.learnvault.entity.LearningReport;
+import com.example.learnvault.repository.LearningReportRepo;
+import com.example.learnvault.service.LearningReportService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+public class LearningReportServiceImpl implements LearningReportService {
+	@Autowired
+	LearningReportRepo learningReportRepo;
+
+	private LearningReportDto toDto(LearningReport r) {
+		LearningReportDto d = new LearningReportDto();
+		d.setReportId(r.getReportId());
+		d.setScope(r.getScope());
+		d.setMetrics(r.getMetrics());
+		d.setGeneratedDate(r.getGeneratedDate());
+		return d;
+	}
+
+	@Override
+	public LearningReportDto add(LearningReportDto dto) {
+		LearningReport r = new LearningReport();
+		r.setScope(dto.getScope());
+		r.setMetrics(dto.getMetrics());
+		r.setGeneratedDate(dto.getGeneratedDate());
+		LearningReport res = learningReportRepo.save(r);
+		dto.setReportId(res.getReportId());
+		return dto;
+	}
+
+	@Override
+	public List<LearningReportDto> all() {
+		List<LearningReport> list = learningReportRepo.findAll();
+		List<LearningReportDto> dl = new ArrayList<>();
+		for (LearningReport r : list)
+			dl.add(toDto(r));
+		return dl;
+	}
+
+	@Override
+	public LearningReportDto byId(Long id) throws Exception {
+		LearningReport r = learningReportRepo.findById(id).orElseThrow(() -> new Exception("Report not found:" + id));
+		return toDto(r);
+	}
+
+	@Override
+	public String delete(Long id) throws Exception {
+		learningReportRepo.findById(id).orElseThrow(() -> new Exception("Report not found:" + id));
+		learningReportRepo.deleteById(id);
+		return "Report deleted";
+	}
+}
+package com.example.learnvault.serviceimplementation;
+
+import com.example.learnvault.dto.ModuleProgressDto;
+import com.example.learnvault.entity.Enrollment;
+import com.example.learnvault.entity.Module;
+import com.example.learnvault.entity.ModuleProgress;
+import com.example.learnvault.repository.EnrollmentRepo;
+import com.example.learnvault.repository.ModuleProgressRepo;
+import com.example.learnvault.repository.ModuleRepo;
+import com.example.learnvault.service.ModuleProgressService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+public class ModuleProgressServiceImpl implements ModuleProgressService {
+
+	@Autowired
+	ModuleProgressRepo moduleProgressRepo;
+
+	@Autowired
+	EnrollmentRepo enrollmentRepo;
+
+	@Autowired
+	ModuleRepo moduleRepo;
+
+	private ModuleProgressDto toDto(ModuleProgress r) {
+		ModuleProgressDto d = new ModuleProgressDto();
+		d.setProgressId(r.getProgressId());
+		d.setEnrollmentId(r.getEnrollment().getEnrollmentId());
+		d.setModuleId(r.getModule().getModuleId());
+		d.setStartedDate(r.getStartedDate());
+		d.setCompletedDate(r.getCompletedDate());
+		d.setTimeSpentMinutes(r.getTimeSpentMinutes());
+		d.setStatus(r.getStatus());
+		return d;
+	}
+
+	@Override
+	public ModuleProgressDto add(ModuleProgressDto dto) throws Exception {
+		Enrollment enrollment = enrollmentRepo.findById(dto.getEnrollmentId())
+				.orElseThrow(() -> new Exception("Enrollment not found: " + dto.getEnrollmentId()));
+		Module module = moduleRepo.findById(dto.getModuleId())
+				.orElseThrow(() -> new Exception("Module not found: " + dto.getModuleId()));
+
+		ModuleProgress r = new ModuleProgress();
+		r.setEnrollment(enrollment);
+		r.setModule(module);
+		r.setStartedDate(dto.getStartedDate());
+		r.setCompletedDate(dto.getCompletedDate());
+		r.setTimeSpentMinutes(dto.getTimeSpentMinutes());
+		r.setStatus(dto.getStatus());
+
+		ModuleProgress saved = moduleProgressRepo.save(r);
+		dto.setProgressId(saved.getProgressId());
+		return dto;
+	}
+
+	@Override
+	public List<ModuleProgressDto> all() {
+		List<ModuleProgress> list = moduleProgressRepo.findAll();
+		List<ModuleProgressDto> dtos = new ArrayList<>();
+		for (ModuleProgress r : list)
+			dtos.add(toDto(r));
+		return dtos;
+	}
+
+	@Override
+	public ModuleProgressDto byId(Long id) throws Exception {
+		ModuleProgress r = moduleProgressRepo.findById(id)
+				.orElseThrow(() -> new Exception("Module progress not found: " + id));
+		return toDto(r);
+	}
+
+	@Override
+	public ModuleProgressDto edit(ModuleProgressDto dto) throws Exception {
+		ModuleProgress r = moduleProgressRepo.findById(dto.getProgressId())
+				.orElseThrow(() -> new Exception("Module progress not found: " + dto.getProgressId()));
+
+		if (dto.getStartedDate() != null)
+			r.setStartedDate(dto.getStartedDate());
+		if (dto.getCompletedDate() != null)
+			r.setCompletedDate(dto.getCompletedDate());
+		if (dto.getTimeSpentMinutes() != null)
+			r.setTimeSpentMinutes(dto.getTimeSpentMinutes());
+		if (dto.getStatus() != null)
+			r.setStatus(dto.getStatus());
+
+		moduleProgressRepo.save(r);
+		return dto;
+	}
+
+	@Override
+	public String delete(Long id) throws Exception {
+		moduleProgressRepo.findById(id).orElseThrow(() -> new Exception("Module progress not found: " + id));
+		moduleProgressRepo.deleteById(id);
+		return "Module progress deleted";
+	}
+
+	@Override
+	public List<ModuleProgressDto> byEnrollment(Long enrollmentId) {
+		List<ModuleProgress> list = moduleProgressRepo.findByEnrollmentEnrollmentId(enrollmentId);
+		List<ModuleProgressDto> dtos = new ArrayList<>();
+		for (ModuleProgress r : list)
+			dtos.add(toDto(r));
+		return dtos;
+	}
+}
+package com.example.learnvault.serviceimplementation;
+
+import com.example.learnvault.dto.ModuleDto;
+import com.example.learnvault.entity.Course;
+import com.example.learnvault.entity.Module;
+import com.example.learnvault.repository.CourseRepo;
+import com.example.learnvault.repository.ModuleRepo;
+import com.example.learnvault.service.ModuleService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+public class ModuleServiceImpl implements ModuleService {
+	@Autowired
+	ModuleRepo moduleRepo;
+	@Autowired
+	CourseRepo courseRepo;
+
+	private ModuleDto toDto(Module r) {
+		ModuleDto d = new ModuleDto();
+		d.setModuleId(r.getModuleId());
+		d.setCourseId(r.getCourse().getCourseId());
+		d.setTitle(r.getTitle());
+		d.setSequenceOrder(r.getSequenceOrder());
+		d.setContentType(r.getContentType());
+		d.setContentUrl(r.getContentUrl());
+		d.setDurationMinutes(r.getDurationMinutes());
+		return d;
+	}
+
+	@Override
+	public ModuleDto add(ModuleDto dto) throws Exception {
+		Course c = courseRepo.findById(dto.getCourseId()).orElseThrow(() -> new Exception("Course not found"));
+		Module r = new Module();
+		r.setCourse(c);
+		r.setTitle(dto.getTitle());
+		r.setSequenceOrder(dto.getSequenceOrder());
+		r.setContentType(dto.getContentType());
+		r.setContentUrl(dto.getContentUrl());
+		r.setDurationMinutes(dto.getDurationMinutes());
+		Module res = moduleRepo.save(r);
+		dto.setModuleId(res.getModuleId());
+		return dto;
+	}
+
+	@Override
+	public List<ModuleDto> all() {
+		List<Module> list = moduleRepo.findAll();
+		List<ModuleDto> dl = new ArrayList<>();
+		for (Module r : list)
+			dl.add(toDto(r));
+		return dl;
+	}
+
+	@Override
+	public ModuleDto byId(Long id) throws Exception {
+		Module r = moduleRepo.findById(id).orElseThrow(() -> new Exception("Module not found:" + id));
+		return toDto(r);
+	}
+
+	@Override
+	public ModuleDto edit(ModuleDto dto) throws Exception {
+		Module s = moduleRepo.findById(dto.getModuleId()).orElseThrow(() -> new Exception("Module not found"));
+		if (dto.getTitle() == null)
+			dto.setTitle(s.getTitle());
+		if (dto.getContentUrl() == null)
+			dto.setContentUrl(s.getContentUrl());
+		s.setTitle(dto.getTitle());
+		s.setContentUrl(dto.getContentUrl());
+		if (dto.getSequenceOrder() != null)
+			s.setSequenceOrder(dto.getSequenceOrder());
+		if (dto.getContentType() != null)
+			s.setContentType(dto.getContentType());
+		if (dto.getDurationMinutes() != null)
+			s.setDurationMinutes(dto.getDurationMinutes());
+		moduleRepo.save(s);
+		return dto;
+	}
+
+	@Override
+	public String delete(Long id) throws Exception {
+		moduleRepo.findById(id).orElseThrow(() -> new Exception("Module not found:" + id));
+		moduleRepo.deleteById(id);
+		return "Module deleted";
+	}
+
+	@Override
+	public List<ModuleDto> byCourse(Long courseId) {
+		List<Module> list = moduleRepo.findByCourseCourseId(courseId);
+		List<ModuleDto> dl = new ArrayList<>();
+		for (Module r : list)
+			dl.add(toDto(r));
+		return dl;
+	}
+}
+package com.example.learnvault.serviceimplementation;
+
+import com.example.learnvault.dto.NotificationDto;
+import com.example.learnvault.entity.*;
+import com.example.learnvault.enums.NotificationStatus;
+import com.example.learnvault.repository.*;
+import com.example.learnvault.service.NotificationService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+public class NotificationServiceImpl implements NotificationService {
+	@Autowired
+	NotificationRepo notificationRepo;
+	@Autowired
+	UserRepo userRepo;
+
+	private NotificationDto toDto(Notification r) {
+		NotificationDto d = new NotificationDto();
+		d.setNotificationId(r.getNotificationId());
+		d.setUserId(r.getUser().getUserId());
+		d.setMessage(r.getMessage());
+		d.setCategory(r.getCategory());
+		d.setStatus(r.getStatus());
+		d.setCreatedDate(r.getCreatedDate());
+		return d;
+	}
+
+	@Override
+	public NotificationDto add(NotificationDto dto) throws Exception {
+		User u = userRepo.findById(dto.getUserId()).orElseThrow(() -> new Exception("User not found"));
+		Notification r = new Notification();
+		r.setUser(u);
+		r.setMessage(dto.getMessage());
+		r.setCategory(dto.getCategory());
+		r.setStatus(dto.getStatus());
+		Notification res = notificationRepo.save(r);
+		dto.setNotificationId(res.getNotificationId());
+		return dto;
+	}
+
+	@Override
+	public List<NotificationDto> all() {
+		List<Notification> list = notificationRepo.findAll();
+		List<NotificationDto> dl = new ArrayList<>();
+		for (Notification r : list)
+			dl.add(toDto(r));
+		return dl;
+	}
+
+	@Override
+	public NotificationDto byId(Long id) throws Exception {
+		Notification r = notificationRepo.findById(id).orElseThrow(() -> new Exception("Notification not found:" + id));
+		return toDto(r);
+	}
+
+	@Override
+	public NotificationDto edit(NotificationDto dto) throws Exception {
+		Notification s = notificationRepo.findById(dto.getNotificationId())
+				.orElseThrow(() -> new Exception("Notification not found"));
+		if (dto.getStatus() != null)
+			s.setStatus(dto.getStatus());
+		notificationRepo.save(s);
+		return dto;
+	}
+
+	@Override
+	public String delete(Long id) throws Exception {
+		notificationRepo.findById(id).orElseThrow(() -> new Exception("Notification not found:" + id));
+		notificationRepo.deleteById(id);
+		return "Notification deleted";
+	}
+
+	@Override
+	public List<NotificationDto> byUser(Long userId) {
+		List<Notification> list = notificationRepo.findByUserUserId(userId);
+		List<NotificationDto> dl = new ArrayList<>();
+		for (Notification r : list)
+			dl.add(toDto(r));
+		return dl;
+	}
+
+	@Override
+	public List<NotificationDto> byUserAndStatus(Long userId, NotificationStatus status) {
+		List<Notification> list = notificationRepo.findByUserUserIdAndStatus(userId, status);
+		List<NotificationDto> dl = new ArrayList<>();
+		for (Notification r : list)
+			dl.add(toDto(r));
+		return dl;
+	}
+}
+package com.example.learnvault.serviceimplementation;
+
+import com.example.learnvault.dto.QuestionDto;
+import com.example.learnvault.entity.Assessment;
+import com.example.learnvault.entity.Question;
+import com.example.learnvault.repository.AssessmentRepo;
+import com.example.learnvault.repository.QuestionRepo;
+import com.example.learnvault.service.QuestionService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+public class QuestionServiceImpl implements QuestionService {
+
+	@Autowired
+	QuestionRepo questionRepo;
+
+	@Autowired
+	AssessmentRepo assessmentRepo;
+
+	private QuestionDto toDto(Question q) {
+		QuestionDto d = new QuestionDto();
+		d.setQuestionId(q.getQuestionId());
+		d.setAssessmentId(q.getAssessment().getAssessmentId());
+		d.setQuestionText(q.getQuestionText());
+		d.setType(q.getType());
+		d.setOptions(q.getOptions());
+		d.setCorrectAnswer(q.getCorrectAnswer());
+		d.setMarks(q.getMarks());
+		return d;
+	}
+
+	@Override
+	public QuestionDto add(QuestionDto dto) throws Exception {
+		Assessment assessment = assessmentRepo.findById(dto.getAssessmentId())
+				.orElseThrow(() -> new Exception("Assessment not found: " + dto.getAssessmentId()));
+
+		Question q = new Question();
+		q.setAssessment(assessment);
+		q.setQuestionText(dto.getQuestionText());
+		q.setType(dto.getType());
+		q.setOptions(dto.getOptions());
+		q.setCorrectAnswer(dto.getCorrectAnswer());
+		q.setMarks(dto.getMarks());
+
+		Question saved = questionRepo.save(q);
+		dto.setQuestionId(saved.getQuestionId());
+		return dto;
+	}
+
+	@Override
+	public List<QuestionDto> all() {
+		List<Question> list = questionRepo.findAll();
+		List<QuestionDto> dtos = new ArrayList<>();
+		for (Question q : list)
+			dtos.add(toDto(q));
+		return dtos;
+	}
+
+	@Override
+	public QuestionDto byId(Long id) throws Exception {
+		Question q = questionRepo.findById(id).orElseThrow(() -> new Exception("Question not found: " + id));
+		return toDto(q);
+	}
+
+	@Override
+	public QuestionDto edit(QuestionDto dto) throws Exception {
+		Question q = questionRepo.findById(dto.getQuestionId())
+				.orElseThrow(() -> new Exception("Question not found: " + dto.getQuestionId()));
+
+		if (dto.getQuestionText() != null)
+			q.setQuestionText(dto.getQuestionText());
+		if (dto.getType() != null)
+			q.setType(dto.getType());
+		if (dto.getOptions() != null)
+			q.setOptions(dto.getOptions());
+		if (dto.getCorrectAnswer() != null)
+			q.setCorrectAnswer(dto.getCorrectAnswer());
+		if (dto.getMarks() != null)
+			q.setMarks(dto.getMarks());
+
+		questionRepo.save(q);
+		return dto;
+	}
+
+	@Override
+	public String delete(Long id) throws Exception {
+		questionRepo.findById(id).orElseThrow(() -> new Exception("Question not found: " + id));
+		questionRepo.deleteById(id);
+		return "Question deleted";
+	}
+
+	@Override
+	public List<QuestionDto> byAssessment(Long assessmentId) {
+		List<Question> list = questionRepo.findByAssessmentAssessmentId(assessmentId);
+		List<QuestionDto> dtos = new ArrayList<>();
+		for (Question q : list)
+			dtos.add(toDto(q));
+		return dtos;
+	}
+}
+package com.example.learnvault.serviceimplementation;
+
+import com.example.learnvault.dto.SessionRegistrationDto;
+import com.example.learnvault.entity.*;
+import com.example.learnvault.repository.*;
+import com.example.learnvault.service.SessionRegistrationService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+public class SessionRegistrationServiceImpl implements SessionRegistrationService {
+	@Autowired
+	SessionRegistrationRepo sessionRegistrationRepo;
+	@Autowired
+	TrainingSessionRepo trainingSessionRepo;
+	@Autowired
+	UserRepo userRepo;
+
+	private SessionRegistrationDto toDto(SessionRegistration r) {
+		SessionRegistrationDto d = new SessionRegistrationDto();
+		d.setRegistrationId(r.getRegistrationId());
+		d.setSessionId(r.getSession().getSessionId());
+		d.setLearnerId(r.getLearner().getUserId());
+		d.setRegisteredDate(r.getRegisteredDate());
+		d.setAttendanceStatus(r.getAttendanceStatus());
+		return d;
+	}
+
+	@Override
+	public SessionRegistrationDto add(SessionRegistrationDto dto) throws Exception {
+		if (sessionRegistrationRepo.existsBySessionSessionIdAndLearnerUserId(dto.getSessionId(), dto.getLearnerId()))
+			throw new RuntimeException("Already registered");
+		TrainingSession session = trainingSessionRepo.findById(dto.getSessionId())
+				.orElseThrow(() -> new Exception("Session not found"));
+		User learner = userRepo.findById(dto.getLearnerId()).orElseThrow(() -> new Exception("User not found"));
+		SessionRegistration r = new SessionRegistration();
+		r.setSession(session);
+		r.setLearner(learner);
+		r.setRegisteredDate(dto.getRegisteredDate());
+		r.setAttendanceStatus(dto.getAttendanceStatus());
+		SessionRegistration res = sessionRegistrationRepo.save(r);
+		dto.setRegistrationId(res.getRegistrationId());
+		return dto;
+	}
+
+	@Override
+	public List<SessionRegistrationDto> all() {
+		List<SessionRegistration> list = sessionRegistrationRepo.findAll();
+		List<SessionRegistrationDto> dl = new ArrayList<>();
+		for (SessionRegistration r : list)
+			dl.add(toDto(r));
+		return dl;
+	}
+
+	@Override
+	public SessionRegistrationDto byId(Long id) throws Exception {
+		SessionRegistration r = sessionRegistrationRepo.findById(id)
+				.orElseThrow(() -> new Exception("Registration not found:" + id));
+		return toDto(r);
+	}
+
+	@Override
+	public SessionRegistrationDto edit(SessionRegistrationDto dto) throws Exception {
+		SessionRegistration s = sessionRegistrationRepo.findById(dto.getRegistrationId())
+				.orElseThrow(() -> new Exception("Registration not found"));
+		if (dto.getAttendanceStatus() != null)
+			s.setAttendanceStatus(dto.getAttendanceStatus());
+		sessionRegistrationRepo.save(s);
+		return dto;
+	}
+
+	@Override
+	public String delete(Long id) throws Exception {
+		sessionRegistrationRepo.findById(id).orElseThrow(() -> new Exception("Registration not found:" + id));
+		sessionRegistrationRepo.deleteById(id);
+		return "Registration deleted";
+	}
+
+	@Override
+	public List<SessionRegistrationDto> bySession(Long sessionId) {
+		List<SessionRegistration> list = sessionRegistrationRepo.findBySessionSessionId(sessionId);
+		List<SessionRegistrationDto> dl = new ArrayList<>();
+		for (SessionRegistration r : list)
+			dl.add(toDto(r));
+		return dl;
+	}
+
+	@Override
+	public List<SessionRegistrationDto> byLearner(Long learnerId) {
+		List<SessionRegistration> list = sessionRegistrationRepo.findByLearnerUserId(learnerId);
+		List<SessionRegistrationDto> dl = new ArrayList<>();
+		for (SessionRegistration r : list)
+			dl.add(toDto(r));
+		return dl;
+	}
+}
+package com.example.learnvault.serviceimplementation;
+
+import com.example.learnvault.dto.TrainingSessionDto;
+import com.example.learnvault.entity.*;
+import com.example.learnvault.enums.SessionStatus;
+import com.example.learnvault.repository.*;
+import com.example.learnvault.service.TrainingSessionService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+public class TrainingSessionServiceImpl implements TrainingSessionService {
+	@Autowired
+	TrainingSessionRepo trainingSessionRepo;
+	@Autowired
+	InstructorRepo instructorRepo;
+	@Autowired
+	CourseRepo courseRepo;
+
+	private TrainingSessionDto toDto(TrainingSession r) {
+		TrainingSessionDto d = new TrainingSessionDto();
+		d.setSessionId(r.getSessionId());
+		d.setCourseId(r.getCourse().getCourseId());
+		d.setInstructorId(r.getInstructor().getInstructorId());
+		d.setSessionDate(r.getSessionDate());
+		d.setStartTime(r.getStartTime());
+		d.setEndTime(r.getEndTime());
+		d.setVenue(r.getVenue());
+		d.setMaxCapacity(r.getMaxCapacity());
+		d.setStatus(r.getStatus());
+		return d;
+	}
+
+	@Override
+	public TrainingSessionDto add(TrainingSessionDto dto) throws Exception {
+		Course c = courseRepo.findById(dto.getCourseId()).orElseThrow(() -> new Exception("Course not found"));
+		Instructor inst = instructorRepo.findById(dto.getInstructorId())
+				.orElseThrow(() -> new Exception("Instructor not found"));
+		TrainingSession r = new TrainingSession();
+		r.setCourse(c);
+		r.setInstructor(inst);
+		r.setSessionDate(dto.getSessionDate());
+		r.setStartTime(dto.getStartTime());
+		r.setEndTime(dto.getEndTime());
+		r.setVenue(dto.getVenue());
+		r.setMaxCapacity(dto.getMaxCapacity());
+		r.setStatus(dto.getStatus());
+		TrainingSession res = trainingSessionRepo.save(r);
+		dto.setSessionId(res.getSessionId());
+		return dto;
+	}
+
+	@Override
+	public List<TrainingSessionDto> all() {
+		List<TrainingSession> list = trainingSessionRepo.findAll();
+		List<TrainingSessionDto> dl = new ArrayList<>();
+		for (TrainingSession r : list)
+			dl.add(toDto(r));
+		return dl;
+	}
+
+	@Override
+	public TrainingSessionDto byId(Long id) throws Exception {
+		TrainingSession r = trainingSessionRepo.findById(id)
+				.orElseThrow(() -> new Exception("Session not found:" + id));
+		return toDto(r);
+	}
+
+	@Override
+	public TrainingSessionDto edit(TrainingSessionDto dto) throws Exception {
+		TrainingSession s = trainingSessionRepo.findById(dto.getSessionId())
+				.orElseThrow(() -> new Exception("Session not found"));
+		Instructor inst = instructorRepo
+				.findById(dto.getInstructorId() != null ? dto.getInstructorId() : s.getInstructor().getInstructorId())
+				.orElseThrow(() -> new Exception("Instructor not found"));
+		if (dto.getSessionDate() == null)
+			dto.setSessionDate(s.getSessionDate());
+		if (dto.getStartTime() == null)
+			dto.setStartTime(s.getStartTime());
+		if (dto.getEndTime() == null)
+			dto.setEndTime(s.getEndTime());
+		if (dto.getVenue() == null)
+			dto.setVenue(s.getVenue());
+		if (dto.getMaxCapacity() == null)
+			dto.setMaxCapacity(s.getMaxCapacity());
+		if (dto.getStatus() == null)
+			dto.setStatus(s.getStatus());
+		TrainingSession r = new TrainingSession();
+		r.setSessionId(dto.getSessionId());
+		r.setCourse(s.getCourse());
+		r.setInstructor(inst);
+		r.setSessionDate(dto.getSessionDate());
+		r.setStartTime(dto.getStartTime());
+		r.setEndTime(dto.getEndTime());
+		r.setVenue(dto.getVenue());
+		r.setMaxCapacity(dto.getMaxCapacity());
+		r.setStatus(dto.getStatus());
+		trainingSessionRepo.save(r);
+		return dto;
+	}
+
+	@Override
+	public String delete(Long id) throws Exception {
+		trainingSessionRepo.findById(id).orElseThrow(() -> new Exception("Session not found:" + id));
+		trainingSessionRepo.deleteById(id);
+		return "Session deleted";
+	}
+
+	@Override
+	public List<TrainingSessionDto> byInstructor(Long instructorId) {
+		List<TrainingSession> list = trainingSessionRepo.findByInstructorInstructorId(instructorId);
+		List<TrainingSessionDto> dl = new ArrayList<>();
+		for (TrainingSession r : list)
+			dl.add(toDto(r));
+		return dl;
+	}
+
+	@Override
+	public List<TrainingSessionDto> byStatus(SessionStatus status) {
+		List<TrainingSession> list = trainingSessionRepo.findByStatus(status);
+		List<TrainingSessionDto> dl = new ArrayList<>();
+		for (TrainingSession r : list)
+			dl.add(toDto(r));
+		return dl;
+	}
+}
+package com.example.learnvault.serviceimplementation;
+
+import com.example.learnvault.dto.UserDto;
+import com.example.learnvault.entity.User;
+import com.example.learnvault.enums.Role;
+import com.example.learnvault.enums.UserStatus;
+import com.example.learnvault.repository.UserRepo;
+import com.example.learnvault.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+public class UserServiceImpl implements UserService {
+	@Autowired
+	UserRepo userRepo;
+	@Autowired
+	PasswordEncoder passwordEncoder;
+
+	private UserDto toDto(User r) {
+		UserDto d = new UserDto();
+		d.setUserId(r.getUserId());
+		d.setName(r.getName());
+		d.setRole(r.getRole());
+		d.setEmail(r.getEmail());
+		d.setPhone(r.getPhone());
+		d.setDepartmentId(r.getDepartmentId());
+		d.setManagerId(r.getManagerId());
+		d.setStatus(r.getStatus());
+		return d;
+	}
+
+	@Override
+	public UserDto add(UserDto dto) {
+		if (userRepo.existsByEmail(dto.getEmail()))
+			throw new RuntimeException("Email exists");
+		User r = new User();
+		r.setName(dto.getName());
+		r.setRole(dto.getRole());
+		r.setEmail(dto.getEmail());
+		r.setPhone(dto.getPhone());
+		r.setPassword(passwordEncoder.encode(dto.getPassword()));
+		r.setDepartmentId(dto.getDepartmentId());
+		r.setManagerId(dto.getManagerId());
+		r.setStatus(dto.getStatus() != null ? dto.getStatus() : UserStatus.ACTIVE);
+		User res = userRepo.save(r);
+		dto.setUserId(res.getUserId());
+		return dto;
+	}
+
+	@Override
+	public List<UserDto> all() {
+		List<User> list = userRepo.findAll();
+		List<UserDto> dl = new ArrayList<>();
+		for (User r : list)
+			dl.add(toDto(r));
+		return dl;
+	}
+
+	@Override
+	public UserDto byId(Long id) throws Exception {
+		User r = userRepo.findById(id).orElseThrow(() -> new Exception("User not found:" + id));
+		return toDto(r);
+	}
+
+	@Override
+	public UserDto edit(UserDto dto) throws Exception {
+		User s = userRepo.findById(dto.getUserId()).orElseThrow(() -> new Exception("User not found"));
+		if (dto.getName() == null)
+			dto.setName(s.getName());
+		if (dto.getRole() == null)
+			dto.setRole(s.getRole());
+		if (dto.getEmail() == null)
+			dto.setEmail(s.getEmail());
+		if (dto.getPhone() == null)
+			dto.setPhone(s.getPhone());
+		if (dto.getStatus() == null)
+			dto.setStatus(s.getStatus());
+		User r = new User();
+		r.setUserId(dto.getUserId());
+		r.setName(dto.getName());
+		r.setRole(dto.getRole());
+		r.setEmail(dto.getEmail());
+		r.setPhone(dto.getPhone());
+		r.setPassword(dto.getPassword() != null ? passwordEncoder.encode(dto.getPassword()) : s.getPassword());
+		r.setDepartmentId(dto.getDepartmentId() != null ? dto.getDepartmentId() : s.getDepartmentId());
+		r.setManagerId(dto.getManagerId() != null ? dto.getManagerId() : s.getManagerId());
+		r.setStatus(dto.getStatus());
+		userRepo.save(r);
+		return dto;
+	}
+
+	@Override
+	public String delete(Long id) throws Exception {
+		userRepo.findById(id).orElseThrow(() -> new Exception("User not found:" + id));
+		userRepo.deleteById(id);
+		return "User deleted";
+	}
+
+	@Override
+	public List<UserDto> byRole(Role role) {
+		List<User> list = userRepo.findByRole(role);
+		List<UserDto> dl = new ArrayList<>();
+		for (User r : list)
+			dl.add(toDto(r));
+		return dl;
+	}
+
+	@Override
+	public List<UserDto> byStatus(UserStatus status) {
+		List<User> list = userRepo.findByStatus(status);
+		List<UserDto> dl = new ArrayList<>();
+		for (User r : list)
+			dl.add(toDto(r));
+		return dl;
+	}
+}
+spring.application.name=learnvault
+
+server.port=2020
+
+spring.datasource.url=jdbc:mysql://localhost:3306/learnvault_db
+spring.datasource.username=root
+spring.datasource.password=root
+
+spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect
+spring.jpa.hibernate.ddl-auto=update
+
+# JWT config (needed for security)
+app.jwt.secret=learnVaultSecretKeyForJwtTokenGeneration2024LearnVault!@#
+app.jwt.expiration=36000000
+package com.example.learnvault;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+@SpringBootTest
+class ApplicationTests {
+    @Test
+    void contextLoads() {}
+}
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.0</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>com.example</groupId>
+    <artifactId>learnvault</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>learnvault</name>
+    <description>LearnVault - Corporate LMS</description>
+
+    <properties>
+        <java.version>17</java.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <!-- JWT -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>0.11.5</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>0.11.5</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>0.11.5</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+
