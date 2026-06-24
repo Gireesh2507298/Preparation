@@ -6763,3 +6763,59 @@ scope
 • Fully implementable using standard Java Spring Boot / ASP.NET Core, 
 Angular/React, and RDBMS tooling 
 
+
+
+
+  LearnVault — Module Assignments · PoD 2				
+Emp ID	Associate	Backend Modules	Frontend Modules	Score
+2507298	Gireesh Bonda	IAM + Learning Analytics	Login+Admin Console+Analytics Dashboard	21
+2507360	Shahya Soorabattula	Course Catalog & Content Management	Course Catalog+Learning Path UI	18
+2507522	Jaya Ganesh Guntupalli	Assessment & Evaluation	Assessment Centre+Quiz UI	19
+2507387	Shaik Riyasatullah Baig	Enrollment+Certification+Notifications	Learner Portal+Cert Wallet+Notif UI	30
+2507369	Varshini P	Instructor & Session Management	Instructor Console+Session Scheduler	18
+
+
+LearnVault Backend Stories | IAM + Learning Analytics					
+Gireesh Bonda · ID: 2507298 · Backend deadline: ~24 Jun 2026 · Interim: 26–29 Jun					
+Story ID	Week (timetable)	Type	User Story	Sub-task / Acceptance criteria	Status
+  Sprint 1 — Phase 1A: DB Schema · Wk3–4 · 25 May–5 Jun · Spring Core+Maven					
+IAM-001	Wk3–4 · 25 May–5 Jun	User Story	As a developer, I want to create the MySQL schema for User, AuditLog, and LearningReport tables.		Backlog
+		Sub-task		User table: UserID(PK), Name, Role(ENUM: LEARNER/INSTRUCTOR/LEARNINGADMIN/HRMANAGER/COMPLIANCE/ADMIN), Email(UQ), Phone, DepartmentID(INT), ManagerID(INT), Status(ACTIVE/INACTIVE)	Backlog
+		Sub-task		AuditLog table: AuditID(PK), UserID(FK→User), Action(VARCHAR 50), EntityType(VARCHAR 50), Timestamp(DATETIME DEFAULT NOW())	Backlog
+		Sub-task		LearningReport table: ReportID(PK), Scope(VARCHAR 50), Metrics(TEXT JSON), GeneratedDate(DATETIME DEFAULT NOW())	Backlog
+		Sub-task		Seed 5 users (one per role), 3 audit logs, 2 reports · Run app · Verify in MySQL Workbench	Backlog
+
+
+
+  Sprint 1 — Phase 1B: JPA Entities+Repos+Service · Wk4–5 · 4–11 Jun · Spring Data JPA					
+IAM-002	Wk4–5 · 4–11 Jun	User Story	As a developer, I want JPA Entities, Repositories, and Services for IAM and Analytics.		Backlog
+		Sub-task		Create Role enum (LEARNER, INSTRUCTOR, LEARNINGADMIN, HRMANAGER, COMPLIANCE, ADMIN)	Backlog
+		Sub-task		Create User.java @Entity: all fields, @Enumerated role/status, Lombok @Data @Builder	Backlog
+		Sub-task		Create AuditLog.java @Entity: @ManyToOne to User, @CreationTimestamp timestamp	Backlog
+		Sub-task		Create LearningReport.java @Entity: reportId, scope, metrics(String), @CreationTimestamp generatedDate	Backlog
+		Sub-task		UserRepository: findByEmail(), findByStatus() · AuditLogRepository: findByUserId(), findByAction(), findByTimestampBetween(), Page<AuditLog> findAll(Pageable)	Backlog
+		Sub-task		LearningReportRepository: findByScope()	Backlog
+		Sub-task		UserService @Slf4j: createUser(BCrypt), getUserById(), getAllUsers(), updateUserStatus(), deleteUser(soft)	Backlog
+		Sub-task		AuditLogService @Slf4j: logAction(userId,action,entityType,entityId) — SHARED method called by all modules after merge	Backlog
+		Sub-task		LearningReportService @Slf4j: generateReport() queries AuditLog+Enrollment data, builds JSON metrics, saves	Backlog
+
+
+  Sprint 2 — Phase 2: REST APIs · Wk6 · 15–19 Jun · Spring REST					
+IAM-003	Wk6 · 15–19 Jun	User Story	As an Admin, I want REST APIs for User management, Login (JWT), and Learning Reports.		Backlog
+		Sub-task		AuthController: POST /api/auth/login → JWT token or 401	Backlog
+		Sub-task		UserController /api/users: POST→201, GET→list, GET/{id}→200/404, PATCH/{id}?status, DELETE/{id}→204	Backlog
+		Sub-task		AuditLogController /api/audit-logs: GET(pageable,?userId=,?action=,?from=&to=), POST(logAction internal)	Backlog
+		Sub-task		LearningReportController /api/learning-reports: POST?scope=→201, GET→list, GET/{id}, GET/summary	Backlog
+		Sub-task		JwtUtil+JwtFilter+SecurityConfig: permit /api/auth/**, /api/audit-logs POST; secure all others	Backlog
+		Sub-task		CORS: allow http://localhost:3000 · Test all in Postman · Save IAM_Collection.json	Backlog
+
+
+  Sprint 2 — Phase 3: JUnit Tests+Logging · Wk7 · 22–26 Jun · TDD/JUnit+SLF4J					
+IAM-004	Wk7 · 22–26 Jun	User Story	As a developer, I want JUnit tests for UserService and LearningReportService.		Backlog
+		Sub-task		UserServiceTest: createUser_valid, duplicateEmail→exception, getUserById_valid, getUserById_invalid→exception, updateStatus	Backlog
+		Sub-task		LearningReportServiceTest: generateReport_hasMetrics, getReportById_invalid→exception	Backlog
+		Sub-task		Mock UserRepository, BCryptPasswordEncoder, AuditLogRepository · All 7 tests pass with mvn test	Backlog
+		Sub-task		@Slf4j verified in UserService, AuditLogService, LearningReportService	Backlog
+
+
+
